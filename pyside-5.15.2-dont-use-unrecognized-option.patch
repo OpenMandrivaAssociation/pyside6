@@ -1,0 +1,12 @@
+diff -up pyside-setup-everywhere-src-6.5/build_scripts/setup_runner.py.1~ pyside-setup-everywhere-src-6.5/build_scripts/setup_runner.py
+--- pyside-setup-everywhere-src-6.5/build_scripts/setup_runner.py.1~	2023-05-25 20:23:05.854121962 +0200
++++ pyside-setup-everywhere-src-6.5/build_scripts/setup_runner.py	2023-05-25 20:24:06.667669676 +0200
+@@ -238,7 +238,7 @@ class SetupRunner(object):
+             if not config.is_cross_compile():
+                 self.add_setup_internal_invocation(
+                     config.shiboken_generator_option_name,
+-                    reuse_build=True)
++                    reuse_build=False)
+ 
+             self.add_setup_internal_invocation(config.pyside_option_name,
+                                                extra_args=extra_args)
