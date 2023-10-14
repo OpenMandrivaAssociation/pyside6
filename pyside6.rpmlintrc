@@ -1,0 +1,5 @@
+# Necessary because of the slightly non-standard directory layout
+addFilter("E: non-executable-script")
+addFilter("E: missing-PT_GNU_STACK-section")
+addFilter("E: statically-linked-binary")
+addFilter("E: incoherent-version-in-name")
