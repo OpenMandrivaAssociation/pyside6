@@ -19,6 +19,7 @@ BuildRequires:	python3dist(numpy)
 BuildRequires:	clang-devel
 BuildRequires:	llvm-devel
 BuildRequires:	pkgconfig(libxml-2.0)
+BuildRequires:	qt6-cmake
 BuildRequires:	cmake(Qt6Bluetooth)
 BuildRequires:	cmake(Qt6Core)
 BuildRequires:	cmake(Qt6DBus)
