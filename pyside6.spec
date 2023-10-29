@@ -14,74 +14,72 @@ Url:		https://wiki.qt.io/Qt_for_Python
 Source0:	https://download.qt.io/official_releases/QtForPython/pyside6/PySide6-%{version}-src/pyside-setup-everywhere-src-%{version}.tar.xz
 Source100:	%{name}.rpmlintrc
 #Patch0:		pyside-5.15.2-dont-use-unrecognized-option.patch
-BuildRequires:	cmake(ECM)
-BuildRequires:	python3dist(numpy)
 BuildRequires:	clang-devel
 BuildRequires:	llvm-devel
-BuildRequires:	pkgconfig(libxml-2.0)
-BuildRequires:	qt6-cmake
+BuildRequires:	patchelf
+BuildRequires:	cmake(ECM)
+BuildRequires:	cmake(Qt6)
+BuildRequires:	cmake(Qt63DAnimation)
+BuildRequires:	cmake(Qt63DCore)
+BuildRequires:	cmake(Qt63DExtras)
+BuildRequires:	cmake(Qt63DInput)
+BuildRequires:	cmake(Qt63DLogic)
+BuildRequires:	cmake(Qt63DRender)
 BuildRequires:	cmake(Qt6Bluetooth)
+BuildRequires:	cmake(Qt6Charts)
+BuildRequires:	cmake(Qt6Concurrent)
 BuildRequires:	cmake(Qt6Core)
+BuildRequires:	cmake(Qt6DataVisualization)
 BuildRequires:	cmake(Qt6DBus)
 BuildRequires:	cmake(Qt6Designer)
-BuildRequires:	cmake(Qt6Nfc)
-BuildRequires:	cmake(Qt6Positioning)
-BuildRequires:	cmake(Qt6Core)
 BuildRequires:	cmake(Qt6Gui)
-BuildRequires:	cmake(Qt6Widgets)
-BuildRequires:	cmake(Qt6PrintSupport)
-BuildRequires:	cmake(Qt6Sql)
-BuildRequires:	cmake(Qt6Network)
-BuildRequires:	cmake(Qt6Test)
-BuildRequires:	cmake(Qt6Concurrent)
-BuildRequires:	cmake(Qt6Xml)
 BuildRequires:	cmake(Qt6Help)
+BuildRequires:	cmake(Qt6HttpServer)
+#BuildRequires:	cmake(Qt6Location)
 BuildRequires:	cmake(Qt6Multimedia)
 BuildRequires:	cmake(Qt6MultimediaWidgets)
+BuildRequires:	cmake(Qt6Network)
+BuildRequires:	cmake(Qt6NetworkAuth)
+BuildRequires:	cmake(Qt6Nfc)
 BuildRequires:	cmake(Qt6OpenGL)
+BuildRequires:	cmake(Qt6PdfWidgets)
+BuildRequires:	cmake(Qt6Positioning)
+BuildRequires:	cmake(Qt6PrintSupport)
 BuildRequires:	cmake(Qt6Qml)
 BuildRequires:	cmake(Qt6Quick)
-BuildRequires:	cmake(Qt6QuickWidgets)
+BuildRequires:	cmake(Qt6Quick3D)
 BuildRequires:	cmake(Qt6QuickControls2)
-BuildRequires:	cmake(Qt6SerialPort)
+BuildRequires:	cmake(Qt6QuickWidgets)
 BuildRequires:	cmake(Qt6RemoteObjects)
 BuildRequires:	cmake(Qt6Scxml)
 BuildRequires:	cmake(Qt6Sensors)
-BuildRequires:	cmake(Qt6TextToSpeech)
-BuildRequires:	cmake(Qt6Charts)
+BuildRequires:	cmake(Qt6SerialBus)
+BuildRequires:	cmake(Qt6SerialPort)
+BuildRequires:	cmake(Qt6SpatialAudio)
+BuildRequires:	cmake(Qt6Sql)
+BuildRequires:	cmake(Qt6StateMachine)
 BuildRequires:	cmake(Qt6Svg)
-BuildRequires:	cmake(Qt6DataVisualization)
+BuildRequires:	cmake(Qt6SvgWidgets)
+BuildRequires:	cmake(Qt6Test)
+BuildRequires:	cmake(Qt6TextToSpeech)
 BuildRequires:	cmake(Qt6UiTools)
 BuildRequires:	cmake(Qt6WebChannel)
 BuildRequires:	cmake(Qt6WebEngineCore)
+BuildRequires:	cmake(Qt6WebEngineQuick)
 BuildRequires:	cmake(Qt6WebEngineWidgets)
 BuildRequires:	cmake(Qt6WebSockets)
-BuildRequires:	cmake(Qt63DCore)
-BuildRequires:	cmake(Qt63DRender)
-BuildRequires:	cmake(Qt63DInput)
-BuildRequires:	cmake(Qt63DLogic)
-BuildRequires:	cmake(Qt63DAnimation)
-BuildRequires:	cmake(Qt63DExtras)
-BuildRequires:	pkgconfig(Qt6PrintSupport)
-BuildRequires:	pkgconfig(Qt6Qml)
-BuildRequires:	pkgconfig(Qt6Quick)
-BuildRequires:	pkgconfig(Qt6QuickWidgets)
-BuildRequires:	pkgconfig(Qt6Sensors)
-BuildRequires:	pkgconfig(Qt6SerialPort)
-BuildRequires:	pkgconfig(Qt6Sql)
-BuildRequires:	pkgconfig(Qt6Svg)
-BuildRequires:	pkgconfig(Qt6Test)
-BuildRequires:	pkgconfig(Qt6TextToSpeech)
-BuildRequires:	pkgconfig(Qt6WebChannel)
-BuildRequires:	pkgconfig(Qt6WebEngineCore)
-BuildRequires:	pkgconfig(Qt6WebEngineWidgets)
-BuildRequires:	pkgconfig(Qt6WebSockets)
-BuildRequires:	pkgconfig(Qt6Widgets)
+BuildRequires:	cmake(Qt6Widgets)
+BuildRequires:	cmake(Qt6Xml)
+BuildRequires:	cmake(sdbus-c++)
 BuildRequires:	pkgconfig(phonon4qt6)
-BuildRequires:	pkgconfig(python3)
-BuildRequires:	python-setuptools
-BuildRequires:	python-sphinx
-BuildRequires:	python3dist(wheel)
+BuildRequires:	pkgconfig(python)
+BuildRequires:	python%{pyver}dist(numpy)
+BuildRequires:	python%{pyver}dist(setuptools)
+BuildRequires:	python%{pyver}dist(sphinx)
+BuildRequires:	python%{pyver}dist(wheel)
+BuildRequires:	qt6-qttools-linguist
+BuildRequires:	qt6-qttools-designer
+BuildRequires:	qt6-qttools-assistant
 Requires:	pyside6-core
 Requires:	pyside6-gui
 Requires:	pyside6-help
@@ -134,8 +132,8 @@ Python binding generator for Qt libraries.
 
 %files -n shiboken6
 %{_bindir}/shiboken6
-%{py_platsitedir}/shiboken6
-%{py_platsitedir}/shiboken6_generator
+#{py_platsitedir}/shiboken6
+#{py_platsitedir}/shiboken6_generator
 %{py_platsitedir}/shiboken6-%{version}-py%{py_ver}.egg-info
 %{py_platsitedir}/shiboken6_generator-%{version}-py%{py_ver}.egg-info
 %{_bindir}/shiboken6-genpyi
@@ -167,8 +165,8 @@ PySide core module.
 %{py_platsitedir}/PySide6/support/deprecated.py
 %{py_platsitedir}/PySide6/support/generate_pyi.py
 
-%{py_platsitedir}/PySide6/QtDBus.abi3.so
-%{py_platsitedir}/PySide6/QtDBus.pyi
+#{py_platsitedir}/PySide6/QtDBus.abi3.so
+#{py_platsitedir}/PySide6/QtDBus.pyi
 
 #------------------------------------------------------------------------------
 %package bluetooth
@@ -951,7 +949,11 @@ PySide devel files.
 %autosetup -p1 -n pyside-setup-everywhere-src-%{version}
 
 %build
-python setup.py --qtpaths=%{_qtdir}/bin/qtpaths build
+#python setup.py --qtpaths=%{_qtdir}/bin/qtpaths build
+%define py_setup_args --qtpaths=%{_qtdir}/bin/qtpaths build
+%py_build
 
 %install
-python setup.py --qtpaths=%{_qtdir}/bin/qtpaths install --prefix %{_prefix} --root %{buildroot}
+#python setup.py --qtpaths=%{_qtdir}/bin/qtpaths install --prefix %{_prefix} --root %{buildroot}
+%define py_setup_args --qtpaths=%{_qtdir}/bin/qtpaths install --prefix %{_prefix}
+%py_install
