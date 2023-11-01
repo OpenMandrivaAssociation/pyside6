@@ -34,6 +34,7 @@ BuildRequires:	cmake(Qt6DataVisualization)
 BuildRequires:	cmake(Qt6DBus)
 BuildRequires:	cmake(Qt6Designer)
 BuildRequires:	cmake(Qt6Gui)
+BuildRequires:	cmake(Qt6Graphs)
 BuildRequires:	cmake(Qt6Help)
 BuildRequires:	cmake(Qt6HttpServer)
 BuildRequires:	cmake(Qt6Multimedia)
@@ -75,8 +76,42 @@ BuildRequires:	cmake(Qt6WebEngineCore)
 BuildRequires:	cmake(Qt6WebEngineQuick)
 BuildRequires:	cmake(Qt6WebEngineWidgets)
 BuildRequires:	cmake(Qt6WebSockets)
+BuildRequires:	cmake(Qt6WebView)
 BuildRequires:	cmake(Qt6Widgets)
 BuildRequires:	cmake(Qt6Xml)
+BuildRequires:	cmake(Qt6BodymovinPrivate)
+BuildRequires:	cmake(Qt6DesignerComponentsPrivate)
+BuildRequires:	cmake(Qt6DeviceDiscoverySupportPrivate)
+BuildRequires:	cmake(Qt6EglFSDeviceIntegrationPrivate)
+BuildRequires:	cmake(Qt6EglFsKmsGbmSupportPrivate)
+BuildRequires:	cmake(Qt6EglFsKmsSupportPrivate)
+BuildRequires:	cmake(Qt6ExampleIconsPrivate)
+BuildRequires:	cmake(Qt6FbSupportPrivate)
+BuildRequires:	cmake(Qt6Graphs)
+BuildRequires:	cmake(Qt6HunspellInputMethod)
+BuildRequires:	cmake(Qt6InputSupportPrivate)
+BuildRequires:	cmake(Qt6JsonRpcPrivate)
+BuildRequires:	cmake(Qt6KmsSupportPrivate)
+BuildRequires:	cmake(Qt6LabsAnimation)
+BuildRequires:	cmake(Qt6LabsFolderListModel)
+BuildRequires:	cmake(Qt6LabsQmlModels)
+BuildRequires:	cmake(Qt6LabsSettings)
+BuildRequires:	cmake(Qt6LabsSharedImage)
+BuildRequires:	cmake(Qt6LabsWavefrontMesh)
+BuildRequires:	cmake(Qt6LanguageServerPrivate)
+BuildRequires:	cmake(Qt6PacketProtocolPrivate)
+BuildRequires:	cmake(Qt6PdfQuick)
+BuildRequires:	cmake(Qt6StateMachineQml)
+BuildRequires:	cmake(Qt6QVirtualKeyboardPlugin)
+BuildRequires:	cmake(Qt6DmaBufServerBufferPlugin)
+BuildRequires:	cmake(Qt6DmaBufServerBufferIntegrationPlugin)
+BuildRequires:	cmake(Qt6QWaylandEglPlatformIntegrationPlugin)
+BuildRequires:	cmake(Qt6WaylandEglCompositorHwIntegrationPrivate)
+BuildRequires:	cmake(Qt6DmaBufServerBufferPlugin)
+BuildRequires:	cmake(Qt6QWebEngineWebViewPlugin)
+BuildRequires:	cmake(Qt6WebViewQuick)
+BuildRequires:	cmake(Qt6WlShellIntegrationPrivate)
+BuildRequires:	cmake(Qt6XcbQpaPrivate)
 BuildRequires:	cmake(sdbus-c++)
 BuildRequires:	pkgconfig(phonon4qt6)
 BuildRequires:	pkgconfig(python)
@@ -93,8 +128,6 @@ Requires:	pyside6-help
 Requires:	pyside6-multimedia
 Requires:	pyside6-network
 Requires:	pyside6-opengl
-Requires:	pyside6-script
-Requires:	pyside6-scripttools
 Requires:	pyside6-sql
 Requires:	pyside6-test
 Requires:	pyside6-xml
@@ -103,7 +136,6 @@ Requires:	pyside6-svg
 Requires:	pyside6-webengine
 Requires:	pyside6-charts
 Requires:	pyside6-concurrent
-Requires:	pyside6-location
 Requires:	pyside6-multimediawidgets
 Requires:	pyside6-positioning
 Requires:	pyside6-printsupport
@@ -139,11 +171,13 @@ Python binding generator for Qt libraries.
 
 %files -n shiboken6
 %{_bindir}/shiboken6
-#{py_platsitedir}/shiboken6
-#{py_platsitedir}/shiboken6_generator
+%{_qtdir}/bin/shiboken_tool.py
+%{py_platsitedir}/shiboken6
+%{py_platsitedir}/shiboken6_generator
 %{py_platsitedir}/shiboken6-%{version}-py%{py_ver}.egg-info
 %{py_platsitedir}/shiboken6_generator-%{version}-py%{py_ver}.egg-info
 %{_bindir}/shiboken6-genpyi
+%{py_platsitedir}/PySide6/libshiboken6.abi3.so*
 
 #------------------------------------------------------------------------------
 
@@ -758,6 +792,8 @@ PySide devel files.
 %{_bindir}/pyside6-uic
 %{_bindir}/pyside6-lupdate
 %{_bindir}/pyside6-designer
+%{_libdir}/pkgconfig/*
+%{_libdir}/cmake/*
 %{py_platsitedir}/PySide6/assistant
 %{py_platsitedir}/PySide6/QtDesigner.abi3.so
 %{py_platsitedir}/PySide6/QtDesigner.pyi
@@ -875,6 +911,39 @@ PySide devel files.
 %{py_platsitedir}/PySide6/typesystems/typesystem_widgets_common.xml
 %{py_platsitedir}/PySide6/typesystems/typesystem_xml.xml
 %{py_platsitedir}/PySide6/typesystems/widgets_common.xml
+%{py_platsitedir}/PySide6/Qt/modules/BodymovinPrivate.json
+%{py_platsitedir}/PySide6/Qt/modules/DesignerComponentsPrivate.json
+%{py_platsitedir}/PySide6/Qt/modules/DeviceDiscoverySupportPrivate.json
+%{py_platsitedir}/PySide6/Qt/modules/EglFSDeviceIntegrationPrivate.json
+%{py_platsitedir}/PySide6/Qt/modules/EglFsKmsGbmSupportPrivate.json
+%{py_platsitedir}/PySide6/Qt/modules/EglFsKmsSupportPrivate.json
+%{py_platsitedir}/PySide6/Qt/modules/ExampleIconsPrivate.json
+%{py_platsitedir}/PySide6/Qt/modules/FbSupportPrivate.json
+%{py_platsitedir}/PySide6/Qt/modules/Graphs.json
+%{py_platsitedir}/PySide6/Qt/modules/HunspellInputMethod.json
+%{py_platsitedir}/PySide6/Qt/modules/InputSupportPrivate.json
+%{py_platsitedir}/PySide6/Qt/modules/JsonRpcPrivate.json
+%{py_platsitedir}/PySide6/Qt/modules/KmsSupportPrivate.json
+%{py_platsitedir}/PySide6/Qt/modules/LabsAnimation.json
+%{py_platsitedir}/PySide6/Qt/modules/LabsFolderListModel.json
+%{py_platsitedir}/PySide6/Qt/modules/LabsQmlModels.json
+%{py_platsitedir}/PySide6/Qt/modules/LabsSettings.json
+%{py_platsitedir}/PySide6/Qt/modules/LabsSharedImage.json
+%{py_platsitedir}/PySide6/Qt/modules/LabsWavefrontMesh.json
+%{py_platsitedir}/PySide6/Qt/modules/LanguageServerPrivate.json
+%{py_platsitedir}/PySide6/Qt/modules/PacketProtocolPrivate.json
+%{py_platsitedir}/PySide6/Qt/modules/PdfQuick.json
+%{py_platsitedir}/PySide6/Qt/modules/StateMachineQml.json
+%{py_platsitedir}/PySide6/Qt/modules/VirtualKeyboard.json
+%{py_platsitedir}/PySide6/Qt/modules/WaylandClient.json
+%{py_platsitedir}/PySide6/Qt/modules/WaylandCompositor.json
+%{py_platsitedir}/PySide6/Qt/modules/WaylandEglClientHwIntegrationPrivate.json
+%{py_platsitedir}/PySide6/Qt/modules/WaylandEglCompositorHwIntegrationPrivate.json
+%{py_platsitedir}/PySide6/Qt/modules/WaylandGlobalPrivate.json
+%{py_platsitedir}/PySide6/Qt/modules/WebView.json
+%{py_platsitedir}/PySide6/Qt/modules/WebViewQuick.json
+%{py_platsitedir}/PySide6/Qt/modules/WlShellIntegrationPrivate.json
+%{py_platsitedir}/PySide6/Qt/modules/XcbQpaPrivate.json
 %{py_platsitedir}/PySide6/Qt/modules/Quick3DHelpers.json
 %{py_platsitedir}/PySide6/Qt/modules/Quick3DIblBaker.json
 %{py_platsitedir}/PySide6/Qt/modules/Core.json
@@ -981,11 +1050,17 @@ PySide devel files.
 
 %build
 #python setup.py --qtpaths=%{_qtdir}/bin/qtpaths build
-%define py_setup_args --qtpaths=%{_qtdir}/bin/qtpaths build
+%global py_setup_args --qtpaths=%{_qtdir}/bin/qtpaths
 %py_build
 
 %install
 #python setup.py --qtpaths=%{_qtdir}/bin/qtpaths install --prefix %{_prefix} --root %{buildroot}
-%define py_setup_args --qtpaths=%{_qtdir}/bin/qtpaths install --prefix %{_prefix}
-%py_install
+%py_install -- --prefix %{_prefix}
 
+# The build system seems to forget about installing some components...
+mkdir -p %{buildroot}%{_libdir} %{buildroot}%{_qtdir}/bin
+cp -a build/qfp-*-release/install/bin/shiboken_tool.py %{buildroot}%{_qtdir}/bin/
+cp -a build/qfp-*-release/install/lib/libshiboken6.abi*.so* %{buildroot}%{py_platsitedir}/PySide6/
+cp -a build/qfp-*-release/install/lib/{pkgconfig,cmake} %{buildroot}%{_libdir}
+cp -a build/qfp-*-release/install/include/shiboken6 %{buildroot}%{py_platsitedir}/PySide6/include
+cp -a build/qfp-*-release/install/lib/python*/site-packages/* %{buildroot}%{py_platsitedir}/
