@@ -6,7 +6,7 @@
 
 Summary:	The PySide project provides LGPL-licensed Python bindings for Qt6
 Name:		pyside6
-Version:	6.5.3
+Version:	6.6.0
 Release:	1
 License:	LGPLv2+
 Group:		Development/KDE and Qt
@@ -122,6 +122,7 @@ BuildRequires:	python%{pyver}dist(wheel)
 BuildRequires:	qt6-qttools-linguist
 BuildRequires:	qt6-qttools-designer
 BuildRequires:	qt6-qttools-assistant
+BuildRequires:	qt6-qtbase-examples
 Requires:	pyside6-core
 Requires:	pyside6-gui
 Requires:	pyside6-help
@@ -178,6 +179,7 @@ Python binding generator for Qt libraries.
 %{py_platsitedir}/shiboken6_generator-%{version}-py%{py_ver}.egg-info
 %{_bindir}/shiboken6-genpyi
 %{py_platsitedir}/PySide6/libshiboken6.abi3.so*
+%{_libdir}/libshiboken6.abi3.so*
 
 #------------------------------------------------------------------------------
 
@@ -200,13 +202,28 @@ PySide core module.
 %dir %{py_platsitedir}/PySide6/Qt
 %dir %{py_platsitedir}/PySide6/Qt/modules
 %{py_platsitedir}/PySide6/Qt/modules/Core.json
-%{py_platsitedir}/PySide6/libpyside6.abi3.so.6.5
+%{py_platsitedir}/PySide6/libpyside6.abi3.so.%{api}
+%{_libdir}/libpyside6.abi3.so*
 %dir %{py_platsitedir}/PySide6/support
 %{py_platsitedir}/PySide6/support/__init__.py
 %{py_platsitedir}/PySide6/support/deprecated.py
 %{py_platsitedir}/PySide6/support/generate_pyi.py
 %{py_platsitedir}/PySide6/QtDBus.abi3.so
 %{py_platsitedir}/PySide6/QtDBus.pyi
+%{py_platsitedir}/PySide6/QtAsyncio
+
+#------------------------------------------------------------------------------
+%package graphs
+Summary:	PySide Graphs module
+Group:		Development/KDE and Qt
+Requires:	pyside6-core = %{version}
+
+%description graphs
+PySide Graphs module.
+
+%files graphs
+%{py_platsitedir}/PySide6/QtGraphs.abi3.so
+%{py_platsitedir}/PySide6/QtGraphs.pyi
 
 #------------------------------------------------------------------------------
 %package bluetooth
@@ -299,6 +316,7 @@ PySide gui module.
 %{py_platsitedir}/PySide6/QtGui.pyi
 %{py_platsitedir}/PySide6/QtGui.*.so
 %{py_platsitedir}/PySide6/Qt/modules/Gui.json
+%{py_platsitedir}/PySide6/QtExampleIcons.abi3.so
 
 #------------------------------------------------------------------------------
 
@@ -619,7 +637,8 @@ Requires:	pyside6-core = %{version}
 PySide qml module.
 
 %files qml
-%{py_platsitedir}/PySide6/libpyside6qml.abi3.so.6.5
+%{py_platsitedir}/PySide6/libpyside6qml.abi3.so.%{api}
+%{_libdir}/libpyside6qml.abi3.so*
 %{py_platsitedir}/PySide6/QtQml.*.so
 %{py_platsitedir}/PySide6/Qt/modules/Qml*.json
 %{py_platsitedir}/PySide6/QtQml.pyi
@@ -843,6 +862,7 @@ PySide devel files.
 %{py_platsitedir}/PySide6/typesystems/typesystem_glgeti_v_modifications.xml
 %{py_platsitedir}/PySide6/typesystems/typesystem_glgetv_includes.xml
 %{py_platsitedir}/PySide6/typesystems/typesystem_glgetv_modifications.xml
+%{py_platsitedir}/PySide6/typesystems/typesystem_graphs.xml
 %{py_platsitedir}/PySide6/typesystems/typesystem_gui.xml
 %{py_platsitedir}/PySide6/typesystems/typesystem_gui_common.xml
 %{py_platsitedir}/PySide6/typesystems/typesystem_gui_mac.xml
@@ -1046,7 +1066,7 @@ PySide devel files.
 #------------------------------------------------------------------------------
 
 %prep
-%autosetup -p1 -n pyside-setup-everywhere-src-%{version}
+%autosetup -p1 -n pyside-setup-everywhere-src-%(echo %{version} |sed -e 's,\.0$,,')
 
 %build
 #python setup.py --qtpaths=%{_qtdir}/bin/qtpaths build
@@ -1064,3 +1084,12 @@ cp -a build/qfp-*-release/install/lib/libshiboken6.abi*.so* %{buildroot}%{py_pla
 cp -a build/qfp-*-release/install/lib/{pkgconfig,cmake} %{buildroot}%{_libdir}
 cp -a build/qfp-*-release/install/include/shiboken6 %{buildroot}%{py_platsitedir}/PySide6/include
 cp -a build/qfp-*-release/install/lib/python*/site-packages/* %{buildroot}%{py_platsitedir}/
+
+# Those are actual shared libraries, and need to be found by ld.so when
+# doing `from PySide6.QtCore import Qt`
+cd %{buildroot}%{py_platsitedir}/PySide6
+LIBS=$(ls -1 lib*.abi*.so.%{api})
+cd %{buildroot}%{_libdir}
+for i in $LIBS; do
+	ln -s python*/site-packages/PySide6/$i .
+done
