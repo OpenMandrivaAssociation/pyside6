@@ -13,7 +13,7 @@
 Summary:	The PySide project provides LGPL-licensed Python bindings for Qt6
 Name:		pyside6
 Version:	6.6.0
-Release:	2
+Release:	3
 License:	LGPLv2+
 Group:		Development/KDE and Qt
 Url:		https://wiki.qt.io/Qt_for_Python
@@ -764,18 +764,11 @@ PySide devel files.
 
 %files devel
 %{_bindir}/android_deploy.py
-%{_bindir}/assistant
-%{_bindir}/linguist
-%{_bindir}/lrelease
+%{_bindir}/pyside
 %{_bindir}/project
 %{_bindir}/qmlcachegen
-%{_bindir}/qmlformat
 %{_bindir}/qmlimportscanner
 %{_bindir}/qmllint
-%{_bindir}/rcc
-%{_bindir}/uic
-%{_bindir}/lupdate
-%{_bindir}/designer
 %{_bindir}/deploy.py
 %{_bindir}/deploy_lib
 %{_bindir}/metaobjectdump.py
@@ -783,7 +776,6 @@ PySide devel files.
 %{_bindir}/pyside_tool.py
 %{_bindir}/qml.py
 %{_bindir}/qmlls
-%{_bindir}/qmltyperegistrar
 %{_bindir}/qtpy2cpp.py
 %{_bindir}/qtpy2cpp_lib
 %{_prefix}/plugins/designer/libPySidePlugin.so
@@ -829,6 +821,15 @@ export PYTHONPATH=$(pwd)/bootstrap
 %if %{with cmake}
 export PYTHONPATH=$(pwd)/bootstrap
 %ninja_install -C rpm.build
+
+# Don't conflict with regular Qt bits
+cd %{buildroot}%{_bindir}
+mkdir pyside
+mv \
+	assistant designer linguist lrelease lupdate \
+	qmlformat qmltyperegistrar rcc uic \
+	pyside/
+cd -
 %else
 %py_install -- --prefix %{_prefix}
 
