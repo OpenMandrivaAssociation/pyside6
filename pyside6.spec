@@ -13,7 +13,7 @@
 Summary:	The PySide project provides LGPL-licensed Python bindings for Qt6
 Name:		pyside6
 Version:	6.6.0
-Release:	3
+Release:	4
 License:	LGPLv2+
 Group:		Development/KDE and Qt
 Url:		https://wiki.qt.io/Qt_for_Python
@@ -43,6 +43,7 @@ BuildRequires:	cmake(Qt6Gui)
 BuildRequires:	cmake(Qt6Graphs)
 BuildRequires:	cmake(Qt6Help)
 BuildRequires:	cmake(Qt6HttpServer)
+BuildRequires:	cmake(Qt6Location)
 BuildRequires:	cmake(Qt6Multimedia)
 BuildRequires:	cmake(Qt6MultimediaWidgets)
 BuildRequires:	cmake(Qt6Network)
@@ -138,6 +139,7 @@ BuildConflicts:	shiboken6
 Requires:	pyside6-core
 Requires:	pyside6-gui
 Requires:	pyside6-help
+Requires:	pyside6-location
 Requires:	pyside6-multimedia
 Requires:	pyside6-network
 Requires:	pyside6-opengl
@@ -566,6 +568,20 @@ PySide concurrent module.
 %files concurrent
 %{py_platsitedir}/PySide6/QtConcurrent.pyi
 %{py_platsitedir}/PySide6/QtConcurrent.*.so
+
+#------------------------------------------------------------------------------
+
+%package location
+Summary:	PySide location module
+Group:		Development/KDE and Qt
+Requires:	pyside6-core = %{version}
+
+%description location
+PySide location module.
+
+%files location
+%{py_platsitedir}/PySide6/QtLocation.*.so
+%{py_platsitedir}/PySide6/QtLocation.pyi
 
 #------------------------------------------------------------------------------
 
