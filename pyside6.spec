@@ -12,14 +12,13 @@
 
 Summary:	The PySide project provides LGPL-licensed Python bindings for Qt6
 Name:		pyside6
-Version:	6.6.0
-Release:	4
+Version:	6.6.1
+Release:	1
 License:	LGPLv2+
 Group:		Development/KDE and Qt
 Url:		https://wiki.qt.io/Qt_for_Python
 Source0:	https://download.qt.io/official_releases/QtForPython/pyside6/PySide6-%{version}-src/pyside-setup-everywhere-src-%{version}.tar.xz
 Source100:	%{name}.rpmlintrc
-Patch0:		pyside-fix-QtAsyncio-install.patch
 BuildRequires:	clang-devel
 BuildRequires:	llvm-devel
 BuildRequires:	patchelf

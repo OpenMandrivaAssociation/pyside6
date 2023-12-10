@@ -1,9 +1,0 @@
-diff -up pyside-setup-everywhere-src-6.6/sources/pyside6/PySide6/CMakeLists.txt.omv~ pyside-setup-everywhere-src-6.6/sources/pyside6/PySide6/CMakeLists.txt
---- pyside-setup-everywhere-src-6.6/sources/pyside6/PySide6/CMakeLists.txt.omv~	2023-11-11 15:09:52.616669099 +0100
-+++ pyside-setup-everywhere-src-6.6/sources/pyside6/PySide6/CMakeLists.txt	2023-11-11 15:10:19.996971138 +0100
-@@ -111,4 +111,4 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR
-         DESTINATION include/${BINDING_NAME}${pyside6_SUFFIX})
- 
- install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/QtAsyncio"
--        DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
-+        DESTINATION "${PYTHON_SITE_PACKAGES}/${BINDING_NAME}${pyside6_SUFFIX}")
