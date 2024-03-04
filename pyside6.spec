@@ -73,6 +73,7 @@ BuildRequires:	cmake(Qt6Quick3DParticles)
 BuildRequires:	cmake(Qt6Quick3DParticleEffects)
 BuildRequires:	cmake(Qt6QuickControls2)
 BuildRequires:	cmake(Qt6QuickWidgets)
+BuildRequires:	cmake(Qt6QuickTest)
 BuildRequires:	cmake(Qt6RemoteObjects)
 BuildRequires:	cmake(Qt6Scxml)
 BuildRequires:	cmake(Qt6Sensors)
@@ -667,6 +668,22 @@ PySide quick module.
 
 #------------------------------------------------------------------------------
 
+%package quicktest
+Summary:	PySide quicktest module
+Group:		Development/KDE and Qt
+Requires:	pyside6-core = %{version}
+Requires:	pyside6-quick = %{version}
+
+%description quicktest
+PySide quicktest module.
+
+%files quicktest
+%{py_platsitedir}/PySide6/QtQuickTest.*.so
+%{py_platsitedir}/PySide6/QtQuickTest.pyi
+
+
+#------------------------------------------------------------------------------
+
 %package quickwidgets
 Summary:	PySide quickwidgets module
 Group:		Development/KDE and Qt
@@ -900,3 +917,5 @@ done
 sed -i -e "s,/lib/,/%{_lib}/,g" %{buildroot}%{_libdir}/cmake/*/*.cmake
 %endif
 %endif
+# This seems to be wrong, at least in that location
+rm -f %{buildroot}%{_bindir}/requirements-android.txt
