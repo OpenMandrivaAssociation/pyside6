@@ -1,0 +1,11 @@
+diff -up pyside-setup/sources/pyside6/PySide6/QtCore/glue/qiopipe.cpp.omv~ pyside-setup/sources/pyside6/PySide6/QtCore/glue/qiopipe.cpp
+--- pyside-setup/sources/pyside6/PySide6/QtCore/glue/qiopipe.cpp.omv~	2024-03-15 21:07:44.742988764 +0100
++++ pyside-setup/sources/pyside6/PySide6/QtCore/glue/qiopipe.cpp	2024-03-15 21:08:01.259090815 +0100
+@@ -6,6 +6,7 @@
+ #include <QtCore/private/qobject_p.h>
+ #include <QtCore/qdebug.h>
+ #include <QtCore/qpointer.h>
++#include <QtCore/qiodevice.h>
+ 
+ #include <memory>
+ 
