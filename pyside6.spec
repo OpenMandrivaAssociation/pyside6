@@ -14,7 +14,7 @@
 Summary:	The PySide project provides LGPL-licensed Python bindings for Qt6
 Name:		pyside6
 Version:	6.7.0
-Release:	%{?gitdate:0.%{gitdate}.}1
+Release:	%{?gitdate:0.%{gitdate}.}2
 License:	LGPLv2+
 Group:		Development/KDE and Qt
 Url:		https://wiki.qt.io/Qt_for_Python
@@ -187,10 +187,24 @@ all of the platforms as Qt itself.
 %files
 
 #------------------------------------------------------------------------------
+%define libshiboken %mklibname shiboken6.api3
+
+%package -n %{libshiboken}
+Summary:	Runtime library for Shiboken, the Qt python binding generator
+Group:		System/Libraries
+
+%description -n %{libshiboken}
+Runtime library for Shiboken, the Qt python binding generator
+
+%files -n %{libshiboken}
+%{_libdir}/libshiboken6.abi3.so*
+
+#------------------------------------------------------------------------------
 %package -n shiboken6
 Summary:	Python binding generator for Qt libraries
 Group:		Development/KDE and Qt
 Obsoletes:	shiboken2 < 5.13.0-2
+Requires:	%{libshiboken} = %{EVRD}
 
 %description -n shiboken6
 Python binding generator for Qt libraries.
@@ -198,7 +212,6 @@ Python binding generator for Qt libraries.
 %files -n shiboken6
 %{_bindir}/shiboken6
 %{_bindir}/shiboken_tool.py
-%{_libdir}/libshiboken6.abi3.so*
 
 #------------------------------------------------------------------------------
 
