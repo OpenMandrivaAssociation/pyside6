@@ -13,8 +13,8 @@
 
 Summary:	The PySide project provides LGPL-licensed Python bindings for Qt6
 Name:		pyside6
-Version:	6.7.0
-Release:	%{?gitdate:0.%{gitdate}.}2
+Version:	6.7.1
+Release:	%{?gitdate:0.%{gitdate}.}1
 License:	LGPLv2+
 Group:		Development/KDE and Qt
 Url:		https://wiki.qt.io/Qt_for_Python
@@ -177,6 +177,9 @@ BuildConflicts:	pkgconfig(Qt6Declarative)
 %if %{with cmake}
 BuildRequires:	cmake ninja
 %endif
+
+%patchlist
+shiboken-missing-include.patch
 
 %description
 The PySide project provides LGPL-licensed Python bindings for the Qt
@@ -817,6 +820,8 @@ PySide devel files.
 
 %files devel
 %{_bindir}/android_deploy.py
+%{_bindir}/balsam
+%{_bindir}/balsamui
 %{_bindir}/pyside
 %{_bindir}/project
 %{_bindir}/qmlcachegen
@@ -829,6 +834,7 @@ PySide devel files.
 %{_bindir}/pyside_tool.py
 %{_bindir}/qml.py
 %{_bindir}/qmlls
+%{_bindir}/qsb
 %{_bindir}/qtpy2cpp.py
 %{_bindir}/qtpy2cpp_lib
 %{_prefix}/plugins/designer/libPySidePlugin.so

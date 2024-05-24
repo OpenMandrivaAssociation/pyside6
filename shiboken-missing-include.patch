@@ -1,0 +1,11 @@
+diff -up pyside-setup-everywhere-src-6.7.1/sources/shiboken6/libshiboken/sbkmodule.cpp.omv~ pyside-setup-everywhere-src-6.7.1/sources/shiboken6/libshiboken/sbkmodule.cpp
+--- pyside-setup-everywhere-src-6.7.1/sources/shiboken6/libshiboken/sbkmodule.cpp.omv~	2024-05-24 19:45:06.564278712 +0200
++++ pyside-setup-everywhere-src-6.7.1/sources/shiboken6/libshiboken/sbkmodule.cpp	2024-05-24 19:45:12.680323593 +0200
+@@ -7,6 +7,7 @@
+ #include "bindingmanager.h"
+ #include "sbkstring.h"
+ #include "sbkcppstring.h"
++#include "sbkconverter_p.h"
+ 
+ #include <unordered_map>
+ #include <unordered_set>
