@@ -2,12 +2,6 @@
 %undefine _debugsource_packages
 %define api %(echo %{version} |cut -d. -f1-2)
 
-# Just for builds where the cmake files are broken, such as
-# early 6.0 betas.
-# cmake is the better way to build this, since it knows where
-# files are expected to go.
-%bcond_without cmake
-
 %global py_setup_args --qtpaths=%{_qtdir}/bin/qtpaths
 #define gitdate 20240315
 
@@ -16,7 +10,7 @@
 Summary:	The PySide project provides LGPL-licensed Python bindings for Qt6
 Name:		pyside6
 Version:	6.8.0.1
-Release:	%{?gitdate:0.%{gitdate}.}1
+Release:	%{?gitdate:0.%{gitdate}.}2
 License:	LGPLv2+
 Group:		Development/KDE and Qt
 Url:		https://wiki.qt.io/Qt_for_Python
@@ -176,9 +170,7 @@ Requires:	pyside6-websockets
 Requires:	pyside6-widgets
 # cmake files act up when running into obsolete-ish Qt5Declarative
 BuildConflicts:	pkgconfig(Qt6Declarative)
-%if %{with cmake}
 BuildRequires:	cmake ninja
-%endif
 
 %patchlist
 
@@ -864,7 +856,6 @@ PySide devel files.
 %py_build -- --build-type=shiboken6
 mv build/qfp-py*-release/package_for_wheels bootstrap
 
-%if %{with cmake}
 # There is already a "build" subdirectory
 export CMAKE_BUILD_DIR=rpm.build
 sed -i -e '/CMAKE_BUILD_TYPE/iinclude_directories(SYSTEM %{_includedir}/python%{pyver})' CMakeLists.txt
@@ -873,16 +864,12 @@ sed -i 's#purelib#platlib#' sources/shiboken6/cmake/ShibokenHelpers.cmake
 %cmake \
 	-DUSE_PYTHON_VERSION=%{pyver} \
 	-G Ninja
-%endif
 
 %build
-%if %{with cmake}
 export PYTHONPATH=$(pwd)/bootstrap
 %ninja_build -C rpm.build
-%endif
 
 %install
-%if %{with cmake}
 export PYTHONPATH=$(pwd)/bootstrap
 %ninja_install -C rpm.build
 
@@ -894,44 +881,10 @@ mv \
 	qmlformat qmltyperegistrar rcc uic \
 	pyside/
 cd -
-%else
-%py_install -- --prefix %{_prefix}
 
-# Move headers where compilers can find them
-mkdir -p %{buildroot}%{_includedir}
-mv %{buildroot}%{py_platsitedir}/PySide6/include/* %{buildroot}%{_includedir}/
-rmdir %{buildroot}%{py_platsitedir}/PySide6/include
+# Docs are actually required (see e.g. typesystem_webenginecore.xml:
+# it references ../doc/qtwebenginecore.rst), but not installed
+cp -a sources/pyside6/PySide6/doc %{buildroot}%{_datadir}/PySide6
 
-# According to the cmake files, typesystems belong in %{_datadir}/PySide6
-mkdir -p %{buildroot}%{_datadir}/PySide6
-
-mv \
-	%{buildroot}%{py_platsitedir}/PySide6/typesystems \
-	%{buildroot}%{py_platsitedir}/PySide6/glue \
-	%{buildroot}%{_datadir}/PySide6/
-
-# The build system seems to forget about installing some components...
-mkdir -p %{buildroot}%{_libdir} %{buildroot}%{_qtdir}/bin
-cp -a build/qfp-*-release/install/bin/shiboken_tool.py %{buildroot}%{_qtdir}/bin/
-cp -a build/qfp-*-release/install/lib/libshiboken6.abi*.so* %{buildroot}%{py_platsitedir}/PySide6/
-cp -a build/qfp-*-release/install/lib/{pkgconfig,cmake} %{buildroot}%{_libdir}
-cp -a build/qfp-*-release/install/lib/python*/site-packages/* %{buildroot}%{py_platsitedir}/
-cp -a build/qfp-*-release/install/include/shiboken6 %{buildroot}%{_includedir}/
-
-# Those are actual shared libraries, and need to be found by ld.so when
-# doing `from PySide6.QtCore import Qt`
-cd %{buildroot}%{py_platsitedir}/PySide6
-LIBS=$(ls -1 lib*.abi*.so.%{api})
-cd %{buildroot}%{_libdir}
-for i in $LIBS; do
-	ln -s python*/site-packages/PySide6/$i .
-done
-for i in *.so.%{api}; do
-	ln -s $i ${i}.0
-done
-%if "%{_lib}" != "lib"
-sed -i -e "s,/lib/,/%{_lib}/,g" %{buildroot}%{_libdir}/cmake/*/*.cmake
-%endif
-%endif
 # This seems to be wrong, at least in that location
 rm -f %{buildroot}%{_bindir}/requirements-android.txt
