@@ -10,7 +10,7 @@
 Summary:	The PySide project provides LGPL-licensed Python bindings for Qt6
 Name:		pyside6
 Version:	6.8.0.2
-Release:	%{?gitdate:0.%{gitdate}.}1
+Release:	%{?gitdate:0.%{gitdate}.}2
 License:	LGPLv2+
 Group:		Development/KDE and Qt
 Url:		https://wiki.qt.io/Qt_for_Python
@@ -233,6 +233,7 @@ PySide core module.
 %{py_platsitedir}/PySide6/QtDBus.abi3.so
 %{py_platsitedir}/PySide6/QtDBus.pyi
 %{py_platsitedir}/PySide6/QtAsyncio
+%{py_platsitedir}/PySide6-*.*-info/
 
 #------------------------------------------------------------------------------
 %package graphs
@@ -831,6 +832,8 @@ PySide devel files.
 %{_bindir}/qtpy2cpp.py
 %{_bindir}/qtpy2cpp_lib
 %{_bindir}/svgtoqml
+%{_bindir}/pyside6-*
+%{_bindir}/shiboken6-genpyi
 %{_prefix}/plugins/designer/libPySidePlugin.so
 %{_libdir}/pkgconfig/*
 %{_libdir}/cmake/*
@@ -838,6 +841,8 @@ PySide devel files.
 %{py_platsitedir}/shiboken6_generator
 %{py_platsitedir}/PySide6/QtDesigner.abi3.so
 %{py_platsitedir}/PySide6/QtDesigner.pyi
+%{py_platsitedir}/shiboken6-*.*-info/
+%{py_platsitedir}/shiboken6_generator-*.*-info/
 %{_includedir}/*
 # FIXME do glue, typesystems etc. need to move to the various
 # subpackages or are they really devel-only?
@@ -889,3 +894,21 @@ cp -a sources/pyside6/PySide6/doc %{buildroot}%{_datadir}/PySide6
 
 # This seems to be wrong, at least in that location
 rm -f %{buildroot}%{_bindir}/requirements-android.txt
+
+# (fedora)
+# Generate egg-info manually and install since we're performing a cmake build.
+#
+# Copy CMake configuration files from the BINARY dir back to the SOURCE dir so
+# setuptools can find them.
+CMAKE_BUILD_DIR=rpm.build
+cp $CMAKE_BUILD_DIR/sources/shiboken6/shibokenmodule/{*.py,*.txt} sources/shiboken6/shibokenmodule/
+cp $CMAKE_BUILD_DIR/sources/pyside6/PySide6/*.py sources/pyside6/PySide6/
+python setup.py --qtpaths=/usr/lib64/qt6/bin/qtpaths install_scripts --install-dir=%{buildroot}%{_bindir}
+for name in PySide6 shiboken6 shiboken6_generator; do
+  mkdir -p %{buildroot}%{py_platsitedir}/$name-%{version}-py%{pyver}.egg-info
+  cp -p $name.egg-info/{PKG-INFO,not-zip-safe,top_level.txt} \
+        %{buildroot}%{py_platsitedir}/$name-%{version}-py%{pyver}.egg-info/
+  if [ -f $name.egg-info/entry_points.txt ]; then
+    cp -p $name.egg-info/entry_points.txt %{buildroot}%{py_platsitedir}/$name-%{version}-py%{pyver}.egg-info/
+  fi
+done
