@@ -544,6 +544,8 @@ PySide webengine module.
 %{py_platsitedir}/PySide6/QtPdf.pyi
 %{py_platsitedir}/PySide6/QtPdfWidgets.abi3.so
 %{py_platsitedir}/PySide6/QtPdfWidgets.pyi
+%{py_platsitedir}/PySide6/QtWebView.abi3.so
+%{py_platsitedir}/PySide6/QtWebView.pyi
 
 #------------------------------------------------------------------------------
 
