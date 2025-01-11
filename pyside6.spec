@@ -10,7 +10,7 @@
 Summary:	The PySide project provides LGPL-licensed Python bindings for Qt6
 Name:		pyside6
 Version:	6.8.1.1
-Release:	%{?gitdate:0.%{gitdate}.}1
+Release:	%{?gitdate:0.%{gitdate}.}2
 License:	LGPLv2+
 Group:		Development/KDE and Qt
 Url:		https://wiki.qt.io/Qt_for_Python
@@ -53,6 +53,7 @@ BuildRequires:	cmake(Qt6Network)
 BuildRequires:	cmake(Qt6NetworkAuth)
 BuildRequires:	cmake(Qt6Nfc)
 BuildRequires:	cmake(Qt6OpenGL)
+BuildRequires:	cmake(Qt6Pdf)
 BuildRequires:	cmake(Qt6PdfWidgets)
 BuildRequires:	cmake(Qt6Positioning)
 BuildRequires:	cmake(Qt6PrintSupport)
@@ -815,30 +816,27 @@ Requires:	shiboken6 = %{EVRD}
 PySide devel files.
 
 %files devel
-%{_bindir}/android_deploy.py
 %{_bindir}/balsam
 %{_bindir}/balsamui
 %{_bindir}/pyside
-%{_bindir}/project
 %{_bindir}/qmlcachegen
 %{_bindir}/qmlimportscanner
 %{_bindir}/qmllint
-%{_bindir}/deploy.py
-%{_bindir}/deploy_lib
-%{_bindir}/metaobjectdump.py
-%{_bindir}/project.py
-%{_bindir}/pyside_tool.py
-%{_bindir}/qml.py
 %{_bindir}/qmlls
 %{_bindir}/qsb
-%{_bindir}/qtpy2cpp.py
-%{_bindir}/qtpy2cpp_lib
 %{_bindir}/svgtoqml
 %{_bindir}/pyside6-*
 %{_bindir}/shiboken6-genpyi
 %{_prefix}/plugins/designer/libPySidePlugin.so
 %{_libdir}/pkgconfig/*
 %{_libdir}/cmake/*
+%dir %{py_platsitedir}/PySide6/Qt
+%dir %{py_platsitedir}/PySide6/Qt/libexec
+%{py_platsitedir}/PySide6/Qt/libexec/qmlcachegen
+%{py_platsitedir}/PySide6/Qt/libexec/qmlimportscanner
+%{py_platsitedir}/PySide6/Qt/libexec/qmltyperegistrar
+%{py_platsitedir}/PySide6/Qt/libexec/rcc
+%{py_platsitedir}/PySide6/Qt/libexec/uic
 %{py_platsitedir}/shiboken6
 %{py_platsitedir}/shiboken6_generator
 %{py_platsitedir}/PySide6/QtDesigner.abi3.so
@@ -850,6 +848,30 @@ PySide devel files.
 # subpackages or are they really devel-only?
 %{_datadir}/PySide6
 %dir %{py_platsitedir}/PySide6
+%{py_platsitedir}/PySide6/assistant
+%{py_platsitedir}/PySide6/balsam
+%{py_platsitedir}/PySide6/balsamui
+%{py_platsitedir}/PySide6/designer
+%{py_platsitedir}/PySide6/linguist
+%{py_platsitedir}/PySide6/lrelease
+%{py_platsitedir}/PySide6/lupdate
+%{py_platsitedir}/PySide6/qmlformat
+%{py_platsitedir}/PySide6/qmllint
+%{py_platsitedir}/PySide6/qmlls
+%{py_platsitedir}/PySide6/qsb
+%dir %{py_platsitedir}/PySide6/scripts
+%{py_platsitedir}/PySide6/scripts/android_deploy.py
+%{py_platsitedir}/PySide6/scripts/deploy.py
+%{py_platsitedir}/PySide6/scripts/deploy_lib
+%{py_platsitedir}/PySide6/scripts/metaobjectdump.py
+%{py_platsitedir}/PySide6/scripts/project.py
+%{py_platsitedir}/PySide6/scripts/project
+%{py_platsitedir}/PySide6/scripts/pyside_tool.py
+%{py_platsitedir}/PySide6/scripts/qml.py
+%{py_platsitedir}/PySide6/scripts/qtpy2cpp.py
+%{py_platsitedir}/PySide6/scripts/qtpy2cpp_lib
+%{py_platsitedir}/PySide6/scripts/requirements-android.txt
+
 
 #------------------------------------------------------------------------------
 
@@ -894,10 +916,6 @@ cd -
 # it references ../doc/qtwebenginecore.rst), but not installed
 cp -a sources/pyside6/PySide6/doc %{buildroot}%{_datadir}/PySide6
 
-# This seems to be wrong, at least in that location
-rm -f %{buildroot}%{_bindir}/requirements-android.txt
-
-# (fedora)
 # Generate egg-info manually and install since we're performing a cmake build.
 #
 # Copy CMake configuration files from the BINARY dir back to the SOURCE dir so
@@ -914,3 +932,17 @@ for name in PySide6 shiboken6 shiboken6_generator; do
     cp -p $name.egg-info/entry_points.txt %{buildroot}%{py_platsitedir}/$name-%{version}-py%{pyver}.egg-info/
   fi
 done
+
+# Add symlinks for tools used by pyside_tool.py
+mkdir -p %{buildroot}%{py_platsitedir}/PySide6/Qt/libexec
+ln -sf %{_qt6_libexecdir}/{qmlcachegen,qmlimportscanner,qmltyperegistrar,rcc,uic} %{buildroot}%{py_platsitedir}/PySide6/Qt/libexec
+ln -sf %{_qt6_bindir}/{assistant,balsam,balsamui,designer,linguist,lrelease,lupdate,qmlformat,qmllint,qmlls,qsb} %{buildroot}%{py_platsitedir}/PySide6
+
+# Create scripts folders (this basically replicates prepare_packages() in build_scripts/main.py)
+mkdir -p %{buildroot}%{py_platsitedir}/PySide6/scripts
+mv %{buildroot}%{_bindir}/{android_deploy.py,deploy_lib,deploy.py,metaobjectdump.py,project,project.py,pyside_tool.py,qml.py,qtpy2cpp_lib,qtpy2cpp.py,requirements-android.txt} %{buildroot}%{py_platsitedir}/PySide6/scripts
+mkdir -p %{buildroot}%{py_platsitedir}/shiboken6_generator/scripts
+ln -s %{_bindir}/shiboken_tool.py %{buildroot}%{py_platsitedir}/shiboken6_generator/scripts
+
+# Install shiboken6
+mv rpm.build/sources/shiboken6/generator/shiboken6 %{buildroot}%{py_platsitedir}/shiboken6_generator
