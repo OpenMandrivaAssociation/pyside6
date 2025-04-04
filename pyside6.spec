@@ -9,8 +9,8 @@
 
 Summary:	The PySide project provides LGPL-licensed Python bindings for Qt6
 Name:		pyside6
-Version:	6.8.1.1
-Release:	%{?gitdate:0.%{gitdate}.}2
+Version:	6.9.0
+Release:	%{?gitdate:0.%{gitdate}.}1
 License:	LGPLv2+
 Group:		Development/KDE and Qt
 Url:		https://wiki.qt.io/Qt_for_Python
@@ -248,6 +248,20 @@ PySide Graphs module.
 %files graphs
 %{py_platsitedir}/PySide6/QtGraphs.abi3.so
 %{py_platsitedir}/PySide6/QtGraphs.pyi
+
+#------------------------------------------------------------------------------
+%package graphswidgets
+Summary:	PySide GraphsWidgets module
+Group:		Development/KDE and Qt
+Requires:	pyside6-core = %{version}
+
+%description graphswidgets
+PySide GraphsWidgets module.
+
+%files graphswidgets
+%{py_platsitedir}/PySide6/QtGraphsWidgets.abi3.so
+%{py_platsitedir}/PySide6/QtGraphsWidgets.pyi
+
 
 #------------------------------------------------------------------------------
 %package bluetooth
@@ -830,6 +844,7 @@ PySide devel files.
 %{_prefix}/plugins/designer/libPySidePlugin.so
 %{_libdir}/pkgconfig/*
 %{_libdir}/cmake/*
+%{_libdir}/*.a
 %dir %{py_platsitedir}/PySide6/Qt
 %dir %{py_platsitedir}/PySide6/Qt/libexec
 %{py_platsitedir}/PySide6/Qt/libexec/qmlcachegen
@@ -865,7 +880,7 @@ PySide devel files.
 %{py_platsitedir}/PySide6/scripts/deploy_lib
 %{py_platsitedir}/PySide6/scripts/metaobjectdump.py
 %{py_platsitedir}/PySide6/scripts/project.py
-%{py_platsitedir}/PySide6/scripts/project
+%{py_platsitedir}/PySide6/scripts/project_lib
 %{py_platsitedir}/PySide6/scripts/pyside_tool.py
 %{py_platsitedir}/PySide6/scripts/qml.py
 %{py_platsitedir}/PySide6/scripts/qtpy2cpp.py
@@ -926,7 +941,7 @@ cp $CMAKE_BUILD_DIR/sources/pyside6/PySide6/*.py sources/pyside6/PySide6/
 python setup.py --qtpaths=/usr/lib64/qt6/bin/qtpaths install_scripts --install-dir=%{buildroot}%{_bindir}
 for name in PySide6 shiboken6 shiboken6_generator; do
   mkdir -p %{buildroot}%{py_platsitedir}/$name-%{version}-py%{pyver}.egg-info
-  cp -p $name.egg-info/{PKG-INFO,not-zip-safe,top_level.txt} \
+  cp -p $name.egg-info/{PKG-INFO,top_level.txt} \
         %{buildroot}%{py_platsitedir}/$name-%{version}-py%{pyver}.egg-info/
   if [ -f $name.egg-info/entry_points.txt ]; then
     cp -p $name.egg-info/entry_points.txt %{buildroot}%{py_platsitedir}/$name-%{version}-py%{pyver}.egg-info/
@@ -940,7 +955,7 @@ ln -sf %{_qt6_bindir}/{assistant,balsam,balsamui,designer,linguist,lrelease,lupd
 
 # Create scripts folders (this basically replicates prepare_packages() in build_scripts/main.py)
 mkdir -p %{buildroot}%{py_platsitedir}/PySide6/scripts
-mv %{buildroot}%{_bindir}/{android_deploy.py,deploy_lib,deploy.py,metaobjectdump.py,project,project.py,pyside_tool.py,qml.py,qtpy2cpp_lib,qtpy2cpp.py,requirements-android.txt} %{buildroot}%{py_platsitedir}/PySide6/scripts
+mv %{buildroot}%{_bindir}/{android_deploy.py,deploy_lib,deploy.py,metaobjectdump.py,project.py,project_lib,pyside_tool.py,qml.py,qtpy2cpp_lib,qtpy2cpp.py,requirements-android.txt} %{buildroot}%{py_platsitedir}/PySide6/scripts
 mkdir -p %{buildroot}%{py_platsitedir}/shiboken6_generator/scripts
 ln -s %{_bindir}/shiboken_tool.py %{buildroot}%{py_platsitedir}/shiboken6_generator/scripts
 
