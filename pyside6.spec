@@ -933,9 +933,9 @@ cd -
 cp -a sources/pyside6/PySide6/doc %{buildroot}%{_datadir}/PySide6
 
 #includes are installed in /usr/pyside6 same with shiboken move them to the correct directory
-cd %{buildroot}%{_includedir}
-mkdir -p PySide6
-mkdir -p shiboken6
+cd %{buildroot}
+mkdir -p /usr/include/PySide6
+mkdir -p /usr/include/shiboken6
 mv /usr/PySide6/*  %{buildroot}%{_includedir}/PySide6/
 mv /usr/shiboken6/* %{buildroot}%{_includedir}/shiboken6/
 
