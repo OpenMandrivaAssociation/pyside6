@@ -859,7 +859,7 @@ PySide devel files.
 %{py_platsitedir}/PySide6/QtDesigner.pyi
 %{py_platsitedir}/shiboken6-*.*-info/
 %{py_platsitedir}/shiboken6_generator-*.*-info/
-%{_includedir}/*
+#%%{_includedir}/*
 # FIXME do glue, typesystems etc. need to move to the various
 # subpackages or are they really devel-only?
 %{_datadir}/PySide6
