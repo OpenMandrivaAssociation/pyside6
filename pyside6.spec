@@ -859,7 +859,7 @@ PySide devel files.
 %{py_platsitedir}/PySide6/QtDesigner.pyi
 %{py_platsitedir}/shiboken6-*.*-info/
 %{py_platsitedir}/shiboken6_generator-*.*-info/
-#%%{_includedir}/*
+%{_includedir}/*
 # FIXME do glue, typesystems etc. need to move to the various
 # subpackages or are they really devel-only?
 %{_datadir}/PySide6
@@ -931,6 +931,14 @@ cd -
 # Docs are actually required (see e.g. typesystem_webenginecore.xml:
 # it references ../doc/qtwebenginecore.rst), but not installed
 cp -a sources/pyside6/PySide6/doc %{buildroot}%{_datadir}/PySide6
+
+#includes are installed in /usr/pyside6 same with shiboken move them to the correct directory
+cd %{buildroot}%{_includedir}
+mkdir -p PySide6
+mkdir -p shiboken6
+mv /usr/PySide6/*  %{buildroot}%{_includedir}/PySide6/
+mv /usr/shiboken6/* %{buildroot}%{_includedir}/shiboken6/
+
 
 # Generate egg-info manually and install since we're performing a cmake build.
 #
