@@ -3,13 +3,13 @@
 %define api %(echo %{version} |cut -d. -f1-2)
 
 %global py_setup_args --qtpaths=%{_qtdir}/bin/qtpaths
-#define gitdate 20240315
+%define gitdate 20250830
 
 %define major %(echo %{version}|cut -d. -f1-3)
 
 Summary:	The PySide project provides LGPL-licensed Python bindings for Qt6
 Name:		pyside6
-Version:	6.9.1
+Version:	gitdate
 Release:	%{?gitdate:0.%{gitdate}.}3
 License:	LGPLv2+
 Group:		Development/KDE and Qt
