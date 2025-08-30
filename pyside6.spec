@@ -354,7 +354,7 @@ PySide gui module.
 %files gui
 %{py_platsitedir}/PySide6/QtGui.pyi
 %{py_platsitedir}/PySide6/QtGui.*.so
-%{py_platsitedir}/PySide6/QtExampleIcons.abi3.so
+#%%{py_platsitedir}/PySide6/QtExampleIcons.abi3.so
 
 #------------------------------------------------------------------------------
 
