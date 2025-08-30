@@ -933,11 +933,11 @@ cd -
 cp -a sources/pyside6/PySide6/doc %{buildroot}%{_datadir}/PySide6
 
 #includes are installed in /usr/pyside6 same with shiboken move them to the correct directory
-cd %{buildroot}
-mkdir -p /usr/include/PySide6
-mkdir -p /usr/include/shiboken6
-mv /usr/PySide6/*  %{buildroot}%{_includedir}/PySide6/
-mv /usr/shiboken6/* %{buildroot}%{_includedir}/shiboken6/
+
+mkdir -p %{buildroot}/usr/include/PySide6
+mkdir -p %{buildroot}/usr/include/shiboken6
+mv %{buildroot}/usr/PySide6/*  %{buildroot}%{_includedir}/PySide6/
+mv %{buildroot}/usr/shiboken6/* %{buildroot}%{_includedir}/shiboken6/
 
 
 # Generate egg-info manually and install since we're performing a cmake build.
