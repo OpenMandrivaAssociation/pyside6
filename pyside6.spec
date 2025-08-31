@@ -9,7 +9,7 @@
 
 Summary:	The PySide project provides LGPL-licensed Python bindings for Qt6
 Name:		pyside6
-Version:	%{gitdate}
+Version:	3.9.1
 Release:	%{?gitdate:0.%{gitdate}.}3
 License:	LGPLv2+
 Group:		Development/KDE and Qt
