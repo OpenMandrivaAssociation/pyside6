@@ -1,0 +1,411 @@
+From 33d5867189b639a638224686bc20e236c253d9f8 Mon Sep 17 00:00:00 2001
+From: iso buider <root@localhost>
+Date: Sun, 31 Aug 2025 23:05:44 +0100
+Subject: [PATCH] Revert "Shiboken6Tools: Use shiboken6-generator from CMake
+ easily"
+
+This reverts commit a377a3b253b6f584384ad6e22ca38f115b11fc6d.
+---
+ build_scripts/platforms/unix.py               |  17 +-
+ build_scripts/platforms/windows_desktop.py    |  31 +--
+ build_scripts/utils.py                        |   6 +-
+ sources/pyside6/cmake/PySideHelpers.cmake     |   1 -
+ .../data/Shiboken6ToolsConfig.cmake.in        |  14 --
+ .../shiboken6/data/Shiboken6ToolsMacros.cmake | 187 ------------------
+ sources/shiboken6/generator/CMakeLists.txt    |  28 +--
+ 7 files changed, 13 insertions(+), 271 deletions(-)
+ delete mode 100644 sources/shiboken6/data/Shiboken6ToolsMacros.cmake
+
+diff --git a/build_scripts/platforms/unix.py b/build_scripts/platforms/unix.py
+index 59c63fda3..54aa265db 100644
+--- a/build_scripts/platforms/unix.py
++++ b/build_scripts/platforms/unix.py
+@@ -257,23 +257,10 @@ def prepare_packages_posix(pyside_build, _vars, cross_build=False):
+             pyside_build.prepare_standalone_clang(is_win=False)
+ 
+     # Copy CMake config files
+-    if config.is_internal_shiboken_generator_build():
+-        # Copy Shiboken6Tools CMake package for generator
+-        copy_cmake_config_dirs(
+-            _vars["install_dir"], _vars["st_build_dir"],
+-            _vars["st_package_name"], "Shiboken6Tools"
+-        )
+-    elif config.is_internal_shiboken_module_build():
+-        # Copy Shiboken6 CMake package for module
+-        copy_cmake_config_dirs(
+-            _vars["install_dir"], _vars["st_build_dir"],
+-            _vars["st_package_name"], "Shiboken6"
+-        )
+-    elif config.is_internal_pyside_build():
+-        # Copy PySide6 CMake package
++    if config.is_internal_shiboken_module_build() or config.is_internal_pyside_build():
+         copy_cmake_config_dirs(
+             _vars["install_dir"], _vars["st_build_dir"],
+-            _vars["st_package_name"], "PySide6"
++            _vars["st_package_name"], _vars["cmake_package_name"]
+         )
+ 
+     # Update rpath to $ORIGIN
+diff --git a/build_scripts/platforms/windows_desktop.py b/build_scripts/platforms/windows_desktop.py
+index e023ff003..7d3febea1 100644
+--- a/build_scripts/platforms/windows_desktop.py
++++ b/build_scripts/platforms/windows_desktop.py
+@@ -201,8 +201,6 @@ def prepare_packages_win32(pyside_build, _vars):
+         copy_qt_artifacts(pyside_build, destination_qt_dir, copy_pdbs, _vars)
+         download_qt_dependency_dlls(_vars, destination_dir, msvc_redist)
+ 
+-    copy_cmake_packages(_vars)
+-
+ 
+ # MSVC redistributable file list.
+ msvc_redist = [
+@@ -442,32 +440,9 @@ def copy_qt_artifacts(pyside_build, destination_qt_dir, copy_pdbs, _vars):
+         # Qt CI is using dynamic libclang with arm config.
+         pyside_build.prepare_standalone_clang(is_win=True)
+ 
+-
+-def copy_cmake_packages(_vars):
+-    if config.is_internal_shiboken_generator_build():
+-        print("copy_cmake_config_dirs called for Shiboken6Tools with:",
+-              "_vars['install_dir'] =", _vars["install_dir"],
+-              "_vars['st_build_dir'] =", _vars["st_build_dir"],
+-              "_vars['st_package_name'] =", _vars["st_package_name"])
+-        copy_cmake_config_dirs(
+-            _vars["install_dir"], _vars["st_build_dir"],
+-            _vars["st_package_name"], "Shiboken6Tools"
+-        )
+-    elif config.is_internal_shiboken_module_build():
+-        print("copy_cmake_config_dirs called for Shiboken6 with:",
+-              "_vars['install_dir'] =", _vars["install_dir"],
+-              "_vars['st_build_dir'] =", _vars["st_build_dir"],
+-              "_vars['st_package_name'] =", _vars["st_package_name"])
+-        copy_cmake_config_dirs(
+-            _vars["install_dir"], _vars["st_build_dir"],
+-            _vars["st_package_name"], "Shiboken6"
+-        )
+-    elif config.is_internal_pyside_build():
+-        print("copy_cmake_config_dirs called for PySide6 with:",
+-              "_vars['install_dir'] =", _vars["install_dir"],
+-              "_vars['st_build_dir'] =", _vars["st_build_dir"],
+-              "_vars['st_package_name'] =", _vars["st_package_name"])
++    # Copy CMake config files
++    if config.is_internal_shiboken_module_build() or config.is_internal_pyside_build():
+         copy_cmake_config_dirs(
+             _vars["install_dir"], _vars["st_build_dir"],
+-            _vars["st_package_name"], "PySide6"
++            _vars["st_package_name"], _vars["cmake_package_name"]
+         )
+diff --git a/build_scripts/utils.py b/build_scripts/utils.py
+index 3cb7ade0f..eac8fdf53 100644
+--- a/build_scripts/utils.py
++++ b/build_scripts/utils.py
+@@ -1153,7 +1153,7 @@ def copy_cmake_config_dirs(install_dir, st_build_dir, st_package_name, cmake_pac
+     dst_cmake_dir.mkdir(parents=True, exist_ok=True)
+ 
+     for src_path in src_cmake_dir.iterdir():
+-        if src_path.is_dir() and (src_path.name.lower() == cmake_package_name.lower()):
++        if src_path.is_dir() and src_path.name.lower().startswith(cmake_package_name.lower()):
+             dst_path = dst_cmake_dir / src_path.name
+             if dst_path.exists():
+                 shutil.rmtree(dst_path)
+@@ -1166,7 +1166,7 @@ def copy_cmake_config_dirs(install_dir, st_build_dir, st_package_name, cmake_pac
+                 for item in wheel_path.iterdir():
+                     if item.is_file() and re.search(r"Targets(-.*)?\.cmake$", item.name):
+                         base_name = item.name.split('Targets')[0]
+-                        if base_name in ("PySide6", "Shiboken6", "Shiboken6Tools"):
++                        if base_name in ("PySide6", "Shiboken6"):
+                             wheel_targets_exist[base_name] = True
+                             # Copy wheel target file
+                             shutil.copy2(str(item), str(dst_path / item.name))
+@@ -1177,7 +1177,7 @@ def copy_cmake_config_dirs(install_dir, st_build_dir, st_package_name, cmake_pac
+                     skip_file = False
+                     if re.search(r"Targets(-.*)?\.cmake$", item.name):
+                         base_name = item.name.split('Targets')[0]
+-                        is_pyside_shiboken = base_name in ("PySide6", "Shiboken6", "Shiboken6Tools")
++                        is_pyside_shiboken = base_name in ("PySide6", "Shiboken6")
+                         if is_pyside_shiboken and base_name in wheel_targets_exist:
+                             skip_file = True
+ 
+diff --git a/sources/pyside6/cmake/PySideHelpers.cmake b/sources/pyside6/cmake/PySideHelpers.cmake
+index 46a1e6d64..b8a3c0c2b 100644
+--- a/sources/pyside6/cmake/PySideHelpers.cmake
++++ b/sources/pyside6/cmake/PySideHelpers.cmake
+@@ -50,7 +50,6 @@ function(pyside_internal_find_host_shiboken_tools)
+         list(APPEND "REQUIRED")
+     endif()
+ 
+-    set(SHIBOKEN6TOOLS_SKIP_FIND_DEPENDENCIES TRUE)
+     find_package(
+         Shiboken6Tools 6 CONFIG
+         ${find_package_extra_args}
+diff --git a/sources/shiboken6/data/Shiboken6ToolsConfig.cmake.in b/sources/shiboken6/data/Shiboken6ToolsConfig.cmake.in
+index 944c49db8..438b5c651 100644
+--- a/sources/shiboken6/data/Shiboken6ToolsConfig.cmake.in
++++ b/sources/shiboken6/data/Shiboken6ToolsConfig.cmake.in
+@@ -2,20 +2,6 @@
+ 
+ cmake_minimum_required(VERSION 3.18)
+ 
+-include(CMakeFindDependencyMacro)
+-find_dependency(Python COMPONENTS Interpreter Development)
+-
+-if(NOT SHIBOKEN6TOOLS_SKIP_FIND_DEPENDENCIES)
+-    list(APPEND CMAKE_PREFIX_PATH
+-        "${Python_SITELIB}/shiboken6/lib/cmake"
+-        "${Python_SITELIB}/PySide6/lib/cmake"
+-    )
+-    find_dependency(Shiboken6 REQUIRED)
+-    find_dependency(PySide6 REQUIRED)
+-endif()
+-
+ if(NOT TARGET Shiboken6::shiboken6)
+     include("${CMAKE_CURRENT_LIST_DIR}/Shiboken6ToolsTargets.cmake")
+ endif()
+-
+-include("${CMAKE_CURRENT_LIST_DIR}/Shiboken6ToolsMacros.cmake")
+diff --git a/sources/shiboken6/data/Shiboken6ToolsMacros.cmake b/sources/shiboken6/data/Shiboken6ToolsMacros.cmake
+deleted file mode 100644
+index b570e73c8..000000000
+--- a/sources/shiboken6/data/Shiboken6ToolsMacros.cmake
++++ /dev/null
+@@ -1,187 +0,0 @@
+-# Function to configure a binding project
+-function(shiboken_generator_create_binding)
+-    set(options FORCE_LIMITED_API)
+-    set(one_value_args
+-        EXTENSION_TARGET
+-        TYPESYSTEM_FILE
+-        LIBRARY_TARGET)
+-    set(multi_value_args
+-        GENERATED_SOURCES
+-        HEADERS
+-        QT_MODULES
+-        SHIBOKEN_EXTRA_OPTIONS)
+-
+-    cmake_parse_arguments(PARSE_ARGV 0 arg
+-        "${options}"
+-        "${one_value_args}"
+-        "${multi_value_args}")
+-
+-    # Validate required arguments
+-    foreach(req EXTENSION_TARGET GENERATED_SOURCES HEADERS TYPESYSTEM_FILE LIBRARY_TARGET)
+-        if(NOT DEFINED arg_${req})
+-            message(FATAL_ERROR "shiboken_generator_create_binding: ${req} is required")
+-        endif()
+-    endforeach()
+-
+-    get_target_property(shiboken_include_dirs Shiboken6::libshiboken INTERFACE_INCLUDE_DIRECTORIES)
+-
+-    # Get Shiboken path based on build type
+-    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+-        get_target_property(shiboken_path Shiboken6::shiboken6 IMPORTED_LOCATION_DEBUG)
+-    else()
+-        get_target_property(shiboken_path Shiboken6::shiboken6 IMPORTED_LOCATION_RELEASE)
+-    endif()
+-
+-    # Basic shiboken options
+-    set(shiboken_options
+-        --generator-set=shiboken
+-        --enable-parent-ctor-heuristic
+-        --enable-return-value-heuristic
+-        --use-isnull-as-nb_nonzero
+-        --avoid-protected-hack
+-        -I${CMAKE_CURRENT_SOURCE_DIR}
+-        -T${CMAKE_CURRENT_SOURCE_DIR}
+-        --output-directory=${CMAKE_CURRENT_BINARY_DIR})
+-
+-    # Add extra options if specified
+-    if(arg_SHIBOKEN_EXTRA_OPTIONS)
+-        list(APPEND shiboken_options ${arg_SHIBOKEN_EXTRA_OPTIONS})
+-    endif()
+-
+-    # Add Qt/PySide specific configurations only if Qt modules are specified
+-    if(arg_QT_MODULES)
+-        # Get Qt include directories
+-        set(qt_include_dirs "")
+-        foreach(module ${arg_QT_MODULES})
+-            get_property(module_includes TARGET Qt6::${module} PROPERTY
+-                INTERFACE_INCLUDE_DIRECTORIES)
+-            list(APPEND qt_include_dirs ${module_includes})
+-
+-            # Check each module for framework on macOS
+-            if(APPLE)
+-                get_target_property(is_framework Qt6::${module} FRAMEWORK)
+-                if(is_framework)
+-                    get_target_property(lib_location Qt6::${module} LOCATION)
+-                    get_filename_component(lib_dir "${lib_location}" DIRECTORY)
+-                    get_filename_component(framework_dir "${lib_dir}/../" ABSOLUTE)
+-                    list(APPEND shiboken_options "--framework-include-paths=${framework_dir}")
+-                endif()
+-            endif()
+-
+-            # Add include paths to shiboken options
+-            foreach(include_dir ${module_includes})
+-                list(APPEND shiboken_options "-I${include_dir}")
+-            endforeach()
+-        endforeach()
+-
+-        get_target_property(pyside_include_dir PySide6::pyside6 INTERFACE_INCLUDE_DIRECTORIES)
+-
+-        # Add PySide typesystems path
+-        list(APPEND shiboken_options "-T${PYSIDE_TYPESYSTEMS}")
+-
+-        # Enable PySide extensions
+-        list(APPEND shiboken_options "--enable-pyside-extensions")
+-    endif()
+-
+-    # Generate binding sources
+-    add_custom_command(
+-        OUTPUT ${arg_GENERATED_SOURCES}
+-        COMMAND "${shiboken_path}"
+-        ${shiboken_options} ${arg_HEADERS} "${arg_TYPESYSTEM_FILE}"
+-        DEPENDS ${arg_HEADERS} ${arg_TYPESYSTEM_FILE}
+-        IMPLICIT_DEPENDS CXX ${arg_HEADERS}
+-        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+-        COMMENT "Generating bindings for ${arg_EXTENSION_TARGET}"
+-    )
+-
+-    # Create binding library
+-    add_library(${arg_EXTENSION_TARGET} MODULE ${arg_GENERATED_SOURCES})
+-
+-    # set limited API
+-    if(arg_FORCE_LIMITED_API OR FORCE_LIMITED_API)
+-        target_compile_definitions(${arg_EXTENSION_TARGET} PRIVATE -DPy_LIMITED_API=0x03090000)
+-    endif()
+-
+-
+-    # Configure include paths
+-    target_include_directories(
+-        ${arg_EXTENSION_TARGET} PRIVATE
+-        ${SHIBOKEN_PYTHON_INCLUDE_DIRS}
+-        ${shiboken_include_dirs}
+-        ${CMAKE_CURRENT_SOURCE_DIR}
+-    )
+-
+-    # Link with Python, Shiboken and C++ library
+-    target_link_libraries(
+-        ${arg_EXTENSION_TARGET} PRIVATE
+-        Shiboken6::libshiboken
+-        ${arg_LIBRARY_TARGET}
+-    )
+-
+-    if(arg_QT_MODULES)
+-        # Add Qt and PySide includes
+-        target_include_directories(
+-            ${arg_EXTENSION_TARGET} PRIVATE ${qt_include_dirs}
+-        )
+-        target_include_directories(
+-            ${arg_EXTENSION_TARGET} PRIVATE ${pyside_include_dir}
+-        )
+-
+-        # Add PySide Qt module-specific includes and link libraries
+-        foreach(module ${arg_QT_MODULES})
+-            target_include_directories(
+-                ${arg_EXTENSION_TARGET} PRIVATE "${pyside_include_dir}/Qt${module}"
+-            )
+-            target_link_libraries(
+-                ${arg_EXTENSION_TARGET} PRIVATE Qt6::${module}
+-            )
+-        endforeach()
+-
+-        # Link base PySide6 library
+-        target_link_libraries(
+-            ${arg_EXTENSION_TARGET} PRIVATE PySide6::pyside6
+-        )
+-
+-        # Link PySide6 QML library if Qml module is used
+-        if("Qml" IN_LIST arg_QT_MODULES)
+-            target_link_libraries(
+-                ${arg_EXTENSION_TARGET} PRIVATE PySide6::pyside6qml
+-            )
+-        endif()
+-    endif()
+-
+-    # Configure target properties
+-    set_target_properties(
+-        ${arg_EXTENSION_TARGET} PROPERTIES
+-        PREFIX ""
+-        OUTPUT_NAME "${arg_EXTENSION_TARGET}${SHIBOKEN_PYTHON_EXTENSION_SUFFIX}"
+-    )
+-
+-    # Platform specific settings
+-    if(WIN32)
+-        # Add Python libraries only on Windows
+-        get_property(SHIBOKEN_PYTHON_LIBRARIES GLOBAL PROPERTY shiboken_python_libraries)
+-
+-        target_link_libraries(
+-            ${arg_EXTENSION_TARGET} PRIVATE "${SHIBOKEN_PYTHON_LIBRARIES}"
+-        )
+-
+-        # Set Windows-specific suffix
+-        if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+-            set_property(
+-                TARGET ${arg_EXTENSION_TARGET} PROPERTY SUFFIX "_d.pyd"
+-            )
+-        else()
+-            set_property(
+-                TARGET ${arg_EXTENSION_TARGET} PROPERTY SUFFIX ".pyd"
+-            )
+-        endif()
+-    endif()
+-
+-    if(APPLE)
+-        set_target_properties(
+-            ${arg_EXTENSION_TARGET} PROPERTIES
+-            LINK_FLAGS "-undefined dynamic_lookup"
+-        )
+-    endif()
+-endfunction()
+diff --git a/sources/shiboken6/generator/CMakeLists.txt b/sources/shiboken6/generator/CMakeLists.txt
+index 997468f02..454e9cf7f 100644
+--- a/sources/shiboken6/generator/CMakeLists.txt
++++ b/sources/shiboken6/generator/CMakeLists.txt
+@@ -69,18 +69,6 @@ install(EXPORT "${package_name}Targets"
+         NAMESPACE "Shiboken6::"
+         DESTINATION ${LIB_INSTALL_DIR}/cmake/${package_name})
+ 
+-# Add wheel specific installation
+-if(NOT is_pyside6_superproject_build)
+-    install(TARGETS shiboken6
+-            EXPORT "${package_name}WheelTargets"
+-            DESTINATION "shiboken6_generator")
+-
+-    install(EXPORT "${package_name}WheelTargets"
+-            NAMESPACE "Shiboken6::"
+-            DESTINATION "${LIB_INSTALL_DIR}/wheels/cmake/${package_name}"
+-            FILE "${package_name}Targets.cmake")
+-endif()
+-
+ set(shiboken_generator_package_name "shiboken6_generator")
+ 
+ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/_config.py.in"
+@@ -113,11 +101,6 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/_git_shiboken_generator_version.py"
+ 
+ include(CMakePackageConfigHelpers)
+ 
+-# Copy macros file to build tree
+-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/../data/${package_name}Macros.cmake"
+-               "${CMAKE_CURRENT_BINARY_DIR}/${package_name}Macros.cmake"
+-               COPYONLY)
+-
+ # Single build-tree and install-tree Config file. There's no need for separate ones because we
+ # don't specify any PATH_VARS, so the relative path of PACKAGE_PREFIX_DIR does not really matter.
+ configure_package_config_file(
+@@ -132,9 +115,8 @@ write_basic_package_version_file(
+     ARCH_INDEPENDENT
+ )
+ 
+-# Install the config files
+-install(FILES
+-    "${CMAKE_CURRENT_BINARY_DIR}/${package_name}Config.cmake"
+-    "${CMAKE_CURRENT_BINARY_DIR}/${package_name}ConfigVersion.cmake"
+-    "${CMAKE_CURRENT_BINARY_DIR}/${package_name}Macros.cmake"
+-    DESTINATION "${LIB_INSTALL_DIR}/cmake/${package_name}")
++install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${package_name}Config.cmake"
++        DESTINATION "${LIB_INSTALL_DIR}/cmake/${package_name}")
++
++install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${package_name}ConfigVersion.cmake"
++        DESTINATION "${LIB_INSTALL_DIR}/cmake/${package_name}")
+-- 
+2.50.0
+
