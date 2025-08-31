@@ -136,6 +136,7 @@ BuildRequires:	qt6-qttools-linguist
 BuildRequires:	qt6-qttools-designer
 BuildRequires:	qt6-qttools-assistant
 BuildRequires:	qt6-qtbase-examples
+BuildRequires:	libxml-2.0
 # FIXME for some reason, if there's a previous version
 # installed, it gets used instead of building the correct
 # version.
