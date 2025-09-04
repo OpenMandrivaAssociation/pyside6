@@ -10,7 +10,7 @@
 Summary:	The PySide project provides LGPL-licensed Python bindings for Qt6
 Name:		pyside6
 Version:	6.10.0
-Release:	%{?gitdate:0.%{gitdate}.}3
+Release:	%{?gitdate:0.%{gitdate}.}4
 License:	LGPLv2+
 Group:		Development/KDE and Qt
 Url:		https://wiki.qt.io/Qt_for_Python
@@ -938,7 +938,7 @@ cp -a sources/pyside6/PySide6/doc %{buildroot}%{_datadir}/PySide6
 
 mkdir -p %{buildroot}/usr/include/PySide6
 mkdir -p %{buildroot}/usr/include/shiboken6
-mv %{buildroot}/usr/PySide6/*  %{buildroot}%{_includedir}/PySide6/
+mv %{buildroot}/usr/PySide6/include/*  %{buildroot}%{_includedir}/PySide6/
 mv %{buildroot}/usr/shiboken6/include/* %{buildroot}%{_includedir}/shiboken6/
 
 
