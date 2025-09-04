@@ -940,7 +940,8 @@ mkdir -p %{buildroot}/usr/include/PySide6
 mkdir -p %{buildroot}/usr/include/shiboken6
 mv %{buildroot}/usr/PySide6/include/*  %{buildroot}%{_includedir}/PySide6/
 mv %{buildroot}/usr/shiboken6/include/* %{buildroot}%{_includedir}/shiboken6/
-
+# Then remove double installed libpyside6.abi3.so and it's symlink
+/bin/rm -r %{buildroot}/usr/shiboken6/*
 
 # Generate egg-info manually and install since we're performing a cmake build.
 #
