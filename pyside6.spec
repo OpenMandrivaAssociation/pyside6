@@ -934,8 +934,9 @@ cd -
 # it references ../doc/qtwebenginecore.rst), but not installed
 cp -a sources/pyside6/PySide6/doc %{buildroot}%{_datadir}/PySide6
 
-#includes are installed in /usr/pyside6 same with shiboken move them to the correct directory
-
+#includes are installed in /usr/pyside6/include same with shiboken however the pyside includes reference 
+#the shiboken includes and expects to find them in the usr/include directory.
+#Just keep things working for the time being!
 mkdir -p %{buildroot}/usr/include/PySide6
 #mkdir -p %{buildroot}/usr/include/shiboken6
 mv %{buildroot}/usr/PySide6/include/*  %{buildroot}%{_includedir}/PySide6/
