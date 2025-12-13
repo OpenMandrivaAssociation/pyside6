@@ -10,7 +10,7 @@
 Summary:	The PySide project provides LGPL-licensed Python bindings for Qt6
 Name:		pyside6
 Version:	6.10.1%{?gitdate:~%{gitdate}}
-Release:	2
+Release:	3
 License:	LGPLv2+
 Group:		Development/KDE and Qt
 Url:		https://wiki.qt.io/Qt_for_Python
@@ -980,6 +980,6 @@ ln -s %{_bindir}/shiboken_tool.py %{buildroot}%{py_platsitedir}/shiboken6_genera
 # Install shiboken6
 mv rpm.build/sources/shiboken6/generator/shiboken6 %{buildroot}%{py_platsitedir}/shiboken6_generator
 # Fix the missing paths in PySide6Config.abi3.cmake which for some reason cmake strips out during install!
-sed -i s#'set_and_check(PYSIDE_PYTHONPATH \"\${PACKAGE_PREFIX_DIR}/\")#set_and_check(PYSIDE_PYTHONPATH \"/usr/lib64/python3.11/site-packages/PySide6\")'# %{buildroot}/usr/lib64/cmake/PySide6/PySide6Config.abi3.cmake
-sed -i s#'set_and_check(PYSIDE_TYPESYSTEMS \"\${PACKAGE_PREFIX_DIR}/typesystems\")#set_and_check(PYSIDE_TYPESYSTEMS \"/usr/share/PySide6/typesystems\")'# %{buildroot}/usr/lib64/cmake/PySide6/PySide6Config.abi3.cmake
-sed -i s#'set_and_check(PYSIDE_GLUE \"\${PACKAGE_PREFIX_DIR}/glue\")#set_and_check(PYSIDE_GLUE \"/usr/share/PySide6/glue\")'# %{buildroot}/usr/lib64/cmake/PySide6/PySide6Config.abi3.cmake
+sed -i s#'set_and_check(PYSIDE_PYTHONPATH \"\${PACKAGE_PREFIX_DIR}/\")#set_and_check(PYSIDE_PYTHONPATH \"%{py_platsitedir}/PySide6\")'# %{buildroot}%{_libdir}/cmake/PySide6/PySide6Config.abi3.cmake
+sed -i s#'set_and_check(PYSIDE_TYPESYSTEMS \"\${PACKAGE_PREFIX_DIR}/typesystems\")#set_and_check(PYSIDE_TYPESYSTEMS \"%{_datadir}/PySide6/typesystems\")'# %{buildroot}%{_libdir}/cmake/PySide6/PySide6Config.abi3.cmake
+sed -i s#'set_and_check(PYSIDE_GLUE \"\${PACKAGE_PREFIX_DIR}/glue\")#set_and_check(PYSIDE_GLUE \"%{_datadir}/PySide6/glue\")'# %{buildroot}%{_libdir}/cmake/PySide6/PySide6Config.abi3.cmake
