@@ -1,0 +1,20 @@
+diff -up pyside-setup-everywhere-src-6.10.2/sources/pyside6/PySide6/QtCore/typesystem_core_common.xml.omv~ pyside-setup-everywhere-src-6.10.2/sources/pyside6/PySide6/QtCore/typesystem_core_common.xml
+--- pyside-setup-everywhere-src-6.10.2/sources/pyside6/PySide6/QtCore/typesystem_core_common.xml.omv~	2026-03-07 21:47:42.557407357 +0100
++++ pyside-setup-everywhere-src-6.10.2/sources/pyside6/PySide6/QtCore/typesystem_core_common.xml	2026-03-07 21:48:25.075937828 +0100
+@@ -1018,6 +1018,16 @@
+       <include file-name="qtcorehelper.h" location="local"/>
+     </extra-includes>
+     <enum-type name="IteratorFlag" flags="IteratorFlags"/>
++    <modify-function signature="QDirListing(QString,QDirListing::IteratorFlags)">
++        <modify-argument index="2">
++            <replace-default-expression with="QDirListing::IteratorFlag::Default"/>
++        </modify-argument>
++    </modify-function>
++    <modify-function signature="QDirListing(QString,QStringList,QDirListing::IteratorFlags)">
++        <modify-argument index="3">
++            <replace-default-expression with="QDirListing::IteratorFlag::Default"/>
++        </modify-argument>
++    </modify-function>
+     <value-type name="DirEntry">
+       <add-function signature="__repr__" return-type="PyObject*">
+           <inject-code class="target" position="beginning" file="../glue/qtcore.cpp"

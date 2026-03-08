@@ -1,0 +1,33 @@
+diff -up pyside-setup-everywhere-src-6.10.2/sources/shiboken6/libshiboken/signature/signature_extend.cpp.omv~ pyside-setup-everywhere-src-6.10.2/sources/shiboken6/libshiboken/signature/signature_extend.cpp
+--- pyside-setup-everywhere-src-6.10.2/sources/shiboken6/libshiboken/signature/signature_extend.cpp.omv~	2026-03-07 22:13:27.216554392 +0100
++++ pyside-setup-everywhere-src-6.10.2/sources/shiboken6/libshiboken/signature/signature_extend.cpp	2026-03-07 22:14:19.804520332 +0100
+@@ -145,17 +145,17 @@ static PyObject *handle_doc(PyObject *ob
+     Py_RETURN_NONE;
+ }
+ 
+-static PyObject *pyside_cf_get___doc__(PyObject *cf)
++static PyObject *pyside_cf_get___doc__(PyObject *cf, void*)
+ {
+     return handle_doc(cf, old_cf_doc_descr);
+ }
+ 
+-static PyObject *pyside_sm_get___doc__(PyObject *sm)
++static PyObject *pyside_sm_get___doc__(PyObject *sm, void*)
+ {
+     return handle_doc(sm, old_sm_doc_descr);
+ }
+ 
+-static PyObject *pyside_md_get___doc__(PyObject *md)
++static PyObject *pyside_md_get___doc__(PyObject *md, void*)
+ {
+     return handle_doc(md, old_md_doc_descr);
+ }
+@@ -165,7 +165,7 @@ PyObject *pyside_tp_get___doc__(PyObject
+     return handle_doc(tp, old_tp_doc_descr);
+ }
+ 
+-static PyObject *pyside_wd_get___doc__(PyObject *wd)
++static PyObject *pyside_wd_get___doc__(PyObject *wd, void*)
+ {
+     return handle_doc(wd, old_wd_doc_descr);
+ }

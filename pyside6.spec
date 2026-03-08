@@ -179,6 +179,8 @@ BuildConflicts:	pkgconfig(Qt6Declarative)
 BuildRequires:	cmake ninja
 
 %patchlist
+pyside-6.10.2-compile.patch
+pyside-6.10.2-function-signatures.patch
 
 %description
 The PySide project provides LGPL-licensed Python bindings for the Qt
