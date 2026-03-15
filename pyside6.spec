@@ -180,7 +180,8 @@ BuildRequires:	cmake ninja
 
 %patchlist
 pyside-6.10.2-compile.patch
-pyside-6.10.2-function-signatures.patch
+# https://codereview.qt-project.org/c/pyside/pyside-setup/+/720741
+https://codereview.qt-project.org/changes/pyside%2Fpyside-setup~720741/revisions/6/patch?download&raw#/ae8de0b.diff
 
 %description
 The PySide project provides LGPL-licensed Python bindings for the Qt

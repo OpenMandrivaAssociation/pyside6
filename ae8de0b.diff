@@ -1,0 +1,242 @@
+diff -up pyside-setup-everywhere-src-6.10.2/sources/shiboken6/ApiExtractor/CMakeLists.txt.2~ pyside-setup-everywhere-src-6.10.2/sources/shiboken6/ApiExtractor/CMakeLists.txt
+--- pyside-setup-everywhere-src-6.10.2/sources/shiboken6/ApiExtractor/CMakeLists.txt.2~	2026-01-28 13:46:13.000000000 +0100
++++ pyside-setup-everywhere-src-6.10.2/sources/shiboken6/ApiExtractor/CMakeLists.txt	2026-03-15 19:07:28.691760880 +0100
+@@ -77,7 +77,7 @@ xmlutils.cpp xmlutils.h xmlutils_libxslt
+ clangparser/clangbuilder.cpp clangparser/clangbuilder.h
+ clangparser/clangdebugutils.cpp clangparser/clangdebugutils.h
+ clangparser/clangparser.cpp clangparser/clangparser.h
+-clangparser/clangutils.cpp clangparser/clangutils.h
++clangparser/clangutils.cpp clangparser/clangutils.h clangparser/clang_typedefs.h
+ clangparser/compilersupport.cpp clangparser/compilersupport.h
+ # Old parser
+ parser/codemodel.cpp parser/codemodel.h parser/codemodel_fwd.h parser/codemodel_enums.h
+diff -up pyside-setup-everywhere-src-6.10.2/sources/shiboken6/ApiExtractor/clangparser/clang_typedefs.h.2~ pyside-setup-everywhere-src-6.10.2/sources/shiboken6/ApiExtractor/clangparser/clang_typedefs.h
+--- pyside-setup-everywhere-src-6.10.2/sources/shiboken6/ApiExtractor/clangparser/clang_typedefs.h.2~	2026-03-15 19:05:29.776919561 +0100
++++ pyside-setup-everywhere-src-6.10.2/sources/shiboken6/ApiExtractor/clangparser/clang_typedefs.h	2026-03-15 19:05:29.776861911 +0100
+@@ -0,0 +1,19 @@
++// Copyright (C) 2026 The Qt Company Ltd.
++// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
++
++#ifndef CLANG_TYPEDEFS_H
++#define CLANG_TYPEDEFS_H
++
++#include <clang-c/Index.h>
++
++namespace clang {
++
++#if LLVM_VERSION >= 22
++using PrintingPolicy = CXPrintingPolicy;
++#else
++using PrintingPolicy = void *;
++#endif
++
++} // namespace clang
++
++#endif // CLANG_TYPEDEFS_H
+diff -up pyside-setup-everywhere-src-6.10.2/sources/shiboken6/ApiExtractor/clangparser/clangbuilder.cpp.2~ pyside-setup-everywhere-src-6.10.2/sources/shiboken6/ApiExtractor/clangparser/clangbuilder.cpp
+--- pyside-setup-everywhere-src-6.10.2/sources/shiboken6/ApiExtractor/clangparser/clangbuilder.cpp.2~	2026-01-28 13:46:13.000000000 +0100
++++ pyside-setup-everywhere-src-6.10.2/sources/shiboken6/ApiExtractor/clangparser/clangbuilder.cpp	2026-03-15 19:05:29.777722619 +0100
+@@ -594,7 +594,7 @@ TypeInfo BuilderPrivate::createTypeInfoU
+     typeInfo.setConstant(clang_isConstQualifiedType(nestedType) != 0);
+     typeInfo.setVolatile(clang_isVolatileQualifiedType(nestedType) != 0);
+ 
+-    QString typeName = getResolvedTypeName(nestedType);
++    QString typeName = getResolvedTypeName(nestedType, m_baseVisitor->printingPolicy());
+     while (TypeInfo::stripLeadingConst(&typeName)
+            || TypeInfo::stripLeadingVolatile(&typeName)) {
+     }
+@@ -732,7 +732,7 @@ std::pair<QString, ClassModelItem> Build
+ {
+     const auto decl = resolveBaseClassType(type);
+     // Note: spelling has "struct baseClass", use type
+-    QString baseClassName = getTypeName(decl.type);
++    QString baseClassName = getTypeName(decl.type, m_baseVisitor->printingPolicy());
+     if (baseClassName.startsWith(u"std::")) // Simplify "std::" types
+         baseClassName = createTypeInfo(decl.type).toString();
+ 
+@@ -944,7 +944,7 @@ static NamespaceType namespaceType(const
+     return NamespaceType::Default;
+ }
+ 
+-static QString enumType(const CXCursor &cursor)
++static QString enumType(const CXCursor &cursor, PrintingPolicy p)
+ {
+     QString name = getCursorSpelling(cursor); // "enum Foo { v1, v2 };"
+     if (name.contains(u"unnamed enum")) // Clang 16.0
+@@ -952,7 +952,7 @@ static QString enumType(const CXCursor &
+     if (name.isEmpty()) {
+         // PYSIDE-1228: For "typedef enum { v1, v2 } Foo;", type will return
+         // "Foo" as expected. Care must be taken to exclude real anonymous enums.
+-        name = getTypeName(clang_getCursorType(cursor));
++        name = getTypeName(clang_getCursorType(cursor), p);
+         if (name.contains(u"(unnamed") // Clang 12.0.1
+             || name.contains(u"(anonymous")) { // earlier
+             name.clear();
+@@ -1010,7 +1010,7 @@ BaseVisitor::StartTokenResult Builder::s
+         d->m_scope.back() += "<>"_L1;
+         break;
+     case CXCursor_EnumDecl: {
+-        QString name = enumType(cursor);
++        QString name = enumType(cursor, printingPolicy());
+         EnumKind kind = CEnum;
+         if (name.isEmpty()) {
+             kind = AnonymousEnum;
+@@ -1030,7 +1030,7 @@ BaseVisitor::StartTokenResult Builder::s
+             d->m_currentEnum->setDeprecated(true);
+         const auto enumType = fullyResolveType(clang_getEnumDeclIntegerType(cursor));
+         d->m_currentEnum->setSigned(isSigned(enumType.kind));
+-        d->m_currentEnum->setUnderlyingType(getTypeName(enumType));
++        d->m_currentEnum->setUnderlyingType(getTypeName(enumType, printingPolicy()));
+         if (std::dynamic_pointer_cast<_ClassModelItem>(d->m_scopeStack.back()))
+             d->m_currentEnum->setAccessPolicy(accessPolicy(clang_getCXXAccessSpecifier(cursor)));
+     }
+diff -up pyside-setup-everywhere-src-6.10.2/sources/shiboken6/ApiExtractor/clangparser/clangparser.cpp.2~ pyside-setup-everywhere-src-6.10.2/sources/shiboken6/ApiExtractor/clangparser/clangparser.cpp
+--- pyside-setup-everywhere-src-6.10.2/sources/shiboken6/ApiExtractor/clangparser/clangparser.cpp.2~	2026-01-28 13:46:13.000000000 +0100
++++ pyside-setup-everywhere-src-6.10.2/sources/shiboken6/ApiExtractor/clangparser/clangparser.cpp	2026-03-15 19:05:29.778712708 +0100
+@@ -326,9 +326,19 @@ bool parse(const QByteArrayList  &clangA
+     setupTarget(translationUnit);
+ 
+     CXCursor rootCursor = clang_getTranslationUnitCursor(translationUnit);
++#if LLVM_VERSION >= 22
++    CXPrintingPolicy printingPolicy = clang_getCursorPrintingPolicy(rootCursor);
++    clang_PrintingPolicy_setProperty(printingPolicy, CXPrintingPolicy_IncludeNewlines, 0);
++    bv.setPrintingPolicy(printingPolicy);
++#endif
+ 
+     clang_visitChildren(rootCursor, visitorCallback, reinterpret_cast<CXClientData>(&bv));
+ 
++#if LLVM_VERSION >= 22
++    bv.setPrintingPolicy(nullptr);
++    clang_PrintingPolicy_dispose(printingPolicy);
++#endif
++
+     QList<Diagnostic> diagnostics = getDiagnostics(translationUnit);
+     diagnostics.append(bv.diagnostics());
+     bv.setDiagnostics(diagnostics);
+diff -up pyside-setup-everywhere-src-6.10.2/sources/shiboken6/ApiExtractor/clangparser/clangparser.h.2~ pyside-setup-everywhere-src-6.10.2/sources/shiboken6/ApiExtractor/clangparser/clangparser.h
+--- pyside-setup-everywhere-src-6.10.2/sources/shiboken6/ApiExtractor/clangparser/clangparser.h.2~	2026-01-28 13:46:13.000000000 +0100
++++ pyside-setup-everywhere-src-6.10.2/sources/shiboken6/ApiExtractor/clangparser/clangparser.h	2026-03-15 19:05:29.779144372 +0100
+@@ -4,7 +4,7 @@
+ #ifndef CLANGPARSER_H
+ #define CLANGPARSER_H
+ 
+-#include <clang-c/Index.h>
++#include "clang_typedefs.h"
+ 
+ #include <QtCore/qbytearraylist.h>
+ #include <QtCore/qhash.h>
+@@ -72,10 +72,14 @@ public:
+     // For usage by the parser
+     bool _handleVisitLocation( const CXSourceLocation &location);
+ 
++    PrintingPolicy printingPolicy() const { return m_printingPolicy; }
++    void setPrintingPolicy(CXPrintingPolicy p) { m_printingPolicy = p; }
++
+ private:
+     SourceFileCache m_fileCache;
+     Diagnostics m_diagnostics;
+     CXFile m_currentCxFile{};
++    PrintingPolicy m_printingPolicy = nullptr;
+     bool m_visitCurrent = true;
+ };
+ 
+diff -up pyside-setup-everywhere-src-6.10.2/sources/shiboken6/ApiExtractor/clangparser/clangutils.cpp.2~ pyside-setup-everywhere-src-6.10.2/sources/shiboken6/ApiExtractor/clangparser/clangutils.cpp
+--- pyside-setup-everywhere-src-6.10.2/sources/shiboken6/ApiExtractor/clangparser/clangutils.cpp.2~	2026-01-28 13:46:13.000000000 +0100
++++ pyside-setup-everywhere-src-6.10.2/sources/shiboken6/ApiExtractor/clangparser/clangutils.cpp	2026-03-15 19:05:29.779530705 +0100
+@@ -7,9 +7,12 @@
+ #include <QtCore/qdir.h>
+ #include <QtCore/qhashfunctions.h>
+ #include <QtCore/qprocess.h>
++#include <QtCore/qregularexpression.h>
+ 
+ #include <string_view>
+ 
++using namespace Qt::StringLiterals;
++
+ bool operator==(const CXCursor &c1, const CXCursor &c2) noexcept
+ {
+     return c1.kind == c2.kind
+@@ -137,11 +140,25 @@ CXType fullyResolveType(const CXType &ty
+     return resolveTypedef(resolveElaboratedType(type));
+ }
+ 
+-QString getTypeName(const CXType &type)
++QString getTypeName(const CXType &type, [[maybe_unused]] PrintingPolicy p)
+ {
++    // Behavioral change, clang_getTypeSpelling() may no longer return the qualified name in 22.1
++#if LLVM_VERSION >= 22
++    CXString qualName = clang_getFullyQualifiedName(type, p, 0);
++    QString result = QString::fromUtf8(clang_getCString(qualName));
++    clang_disposeString(qualName);
++    // Fix "QList<T>::value_type<OtherTplArg>" to "QList::value_type<OtherTplArg>"
++    // as clang_getTypeSpelling() used to return in LLVM < 22 and is expected by the
++    // type resolution in AbstractMetaBuilder. FIXME: Use a proper type parser?
++    static const QRegularExpression fixPattern(u"<[^<]*>::"_s);
++    Q_ASSERT(fixPattern.isValid());
++    result.replace(fixPattern, u"::"_s);
++    return result;
++#else
+     CXString typeSpelling = clang_getTypeSpelling(type);
+     const QString result = QString::fromUtf8(clang_getCString(typeSpelling));
+     clang_disposeString(typeSpelling);
++#endif
+     return result;
+ }
+ 
+@@ -157,9 +174,9 @@ bool hasScopeResolution(const CXType &ty
+ }
+ 
+ // Resolve elaborated types occurring with clang 16
+-QString getResolvedTypeName(const CXType &type)
++QString getResolvedTypeName(const CXType &type, PrintingPolicy p)
+ {
+-    return getTypeName(resolveElaboratedType(type));
++    return getTypeName(resolveElaboratedType(type), p);
+ }
+ 
+ Diagnostic::Diagnostic(const QString &m, const CXCursor &c, CXDiagnosticSeverity s)
+diff -up pyside-setup-everywhere-src-6.10.2/sources/shiboken6/ApiExtractor/clangparser/clangutils.h.2~ pyside-setup-everywhere-src-6.10.2/sources/shiboken6/ApiExtractor/clangparser/clangutils.h
+--- pyside-setup-everywhere-src-6.10.2/sources/shiboken6/ApiExtractor/clangparser/clangutils.h.2~	2026-01-28 13:46:13.000000000 +0100
++++ pyside-setup-everywhere-src-6.10.2/sources/shiboken6/ApiExtractor/clangparser/clangutils.h	2026-03-15 19:05:29.779951039 +0100
+@@ -4,7 +4,8 @@
+ #ifndef CLANGUTILS_H
+ #define CLANGUTILS_H
+ 
+-#include <clang-c/Index.h>
++#include "clang_typedefs.h"
++
+ #include <QtCore/qstring.h>
+ #include <QtCore/qstringlist.h>
+ #include <QtCore/qcompare.h>
+@@ -26,14 +27,10 @@ namespace clang {
+ QString getCursorKindName(CXCursorKind cursorKind);
+ QString getCursorSpelling(const CXCursor &cursor);
+ QString getCursorDisplayName(const CXCursor &cursor);
+-QString getTypeName(const CXType &type);
++QString getTypeName(const CXType &type, PrintingPolicy p);
+ bool hasScopeResolution(const CXType &type);
+ CXType fullyResolveType(const CXType &type);
+-QString getResolvedTypeName(const CXType &type);
+-inline QString getCursorTypeName(const CXCursor &cursor)
+-    { return getTypeName(clang_getCursorType(cursor)); }
+-inline QString getCursorResultTypeName(const CXCursor &cursor)
+-    { return getTypeName(clang_getCursorResultType(cursor)); }
++QString getResolvedTypeName(const CXType &type, PrintingPolicy p);
+ 
+ inline bool isCursorValid(const CXCursor &c)
+ {
+diff -up pyside-setup-everywhere-src-6.10.2/sources/shiboken6/cmake/ShibokenSetup.cmake.2~ pyside-setup-everywhere-src-6.10.2/sources/shiboken6/cmake/ShibokenSetup.cmake
+--- pyside-setup-everywhere-src-6.10.2/sources/shiboken6/cmake/ShibokenSetup.cmake.2~	2026-01-28 13:46:13.000000000 +0100
++++ pyside-setup-everywhere-src-6.10.2/sources/shiboken6/cmake/ShibokenSetup.cmake	2026-03-15 19:08:41.174523265 +0100
+@@ -83,8 +83,10 @@ if(NOT PYTHON_SITE_PACKAGES)
+     shiboken_internal_set_python_site_packages()
+ endif()
+ 
++string(REGEX REPLACE "\.[0-9]+\.[0-9]+$" "" LLVM_VERSION "${LLVM_PACKAGE_VERSION}")
++
+ set_cmake_cxx_flags()
+-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D QT_NO_CAST_FROM_ASCII -D QT_NO_CAST_TO_ASCII")
++set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D QT_NO_CAST_FROM_ASCII -D QT_NO_CAST_TO_ASCII -D LLVM_VERSION=${LLVM_VERSION}")
+ 
+ # Force usage of the C++17 standard
+ set(CMAKE_CXX_STANDARD 17)
