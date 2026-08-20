@@ -945,6 +945,7 @@ cd ..
 /usr/bin/ninja -C rpm.build -j${RPM_BUILD_NCPUS}
 
 %install
+rm -rf %{buildroot}
 DESTDIR=%{buildroot} cmake --install rpm.build
 
 # cmake installs headers at $prefix/{PySide6,shiboken6}/include
