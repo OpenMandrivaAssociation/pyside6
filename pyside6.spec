@@ -200,7 +200,7 @@ Group:		System/Libraries
 Runtime library for Shiboken, the Qt python binding generator
 
 %files -n %{libshiboken}
-%{_libdir}/libshiboken6.abi3.so*
+%{_libdir}/libshiboken6.*.so*
 
 #------------------------------------------------------------------------------
 %package -n shiboken6
@@ -232,12 +232,12 @@ PySide core module.
 %{py_platsitedir}/PySide6/__init__.py*
 %{py_platsitedir}/PySide6/_config.py*
 %{py_platsitedir}/PySide6/_git_pyside_version.py*
-%{_libdir}/libpyside6.abi3.so*
+%{_libdir}/libpyside6.*.so*
 %dir %{py_platsitedir}/PySide6/support
 %{py_platsitedir}/PySide6/support/__init__.py
 %{py_platsitedir}/PySide6/support/deprecated.py
 %{py_platsitedir}/PySide6/support/generate_pyi.py
-%{py_platsitedir}/PySide6/QtDBus.abi3.so
+%{py_platsitedir}/PySide6/QtDBus.*.so
 %{py_platsitedir}/PySide6/QtDBus.pyi
 %{py_platsitedir}/PySide6/QtAsyncio
 %{py_platsitedir}/PySide6-*.*-info/
@@ -252,7 +252,7 @@ Requires:	pyside6-core = %{version}
 PySide CanvasPainter module.
 
 %files canvaspainter
-%{py_platsitedir}/PySide6/QtCanvasPainter.abi3.so
+%{py_platsitedir}/PySide6/QtCanvasPainter.*.so
 %{py_platsitedir}/PySide6/QtCanvasPainter.pyi
 
 #------------------------------------------------------------------------------
@@ -265,7 +265,7 @@ Requires:	pyside6-core = %{version}
 PySide Graphs module.
 
 %files graphs
-%{py_platsitedir}/PySide6/QtGraphs.abi3.so
+%{py_platsitedir}/PySide6/QtGraphs.*.so
 %{py_platsitedir}/PySide6/QtGraphs.pyi
 
 #------------------------------------------------------------------------------
@@ -278,7 +278,7 @@ Requires:	pyside6-core = %{version}
 PySide GraphsWidgets module.
 
 %files graphswidgets
-%{py_platsitedir}/PySide6/QtGraphsWidgets.abi3.so
+%{py_platsitedir}/PySide6/QtGraphsWidgets.*.so
 %{py_platsitedir}/PySide6/QtGraphsWidgets.pyi
 
 
@@ -292,7 +292,7 @@ Requires:	pyside6-core = %{version}
 PySide Bluetooth module.
 
 %files bluetooth
-%{py_platsitedir}/PySide6/QtBluetooth.abi3.so
+%{py_platsitedir}/PySide6/QtBluetooth.*.so
 %{py_platsitedir}/PySide6/QtBluetooth.pyi
 
 #------------------------------------------------------------------------------
@@ -305,7 +305,7 @@ Requires:	pyside6-core = %{version}
 PySide HTTP server module.
 
 %files httpserver
-%{py_platsitedir}/PySide6/QtHttpServer.abi3.so
+%{py_platsitedir}/PySide6/QtHttpServer.*.so
 %{py_platsitedir}/PySide6/QtHttpServer.pyi
 
 #------------------------------------------------------------------------------
@@ -318,7 +318,7 @@ Requires:	pyside6-core = %{version}
 PySide NFC module.
 
 %files nfc
-%{py_platsitedir}/PySide6/QtNfc.abi3.so
+%{py_platsitedir}/PySide6/QtNfc.*.so
 %{py_platsitedir}/PySide6/QtNfc.pyi
 
 #------------------------------------------------------------------------------
@@ -331,7 +331,7 @@ Requires:	pyside6-core = %{version}
 PySide Serial Bus module.
 
 %files serialbus
-%{py_platsitedir}/PySide6/QtSerialBus.abi3.so
+%{py_platsitedir}/PySide6/QtSerialBus.*.so
 %{py_platsitedir}/PySide6/QtSerialBus.pyi
 
 #------------------------------------------------------------------------------
@@ -344,7 +344,7 @@ Requires:	pyside6-core = %{version}
 PySide spatialaudio module.
 
 %files spatialaudio
-%{py_platsitedir}/PySide6/QtSpatialAudio.abi3.so
+%{py_platsitedir}/PySide6/QtSpatialAudio.*.so
 %{py_platsitedir}/PySide6/QtSpatialAudio.pyi
 
 #------------------------------------------------------------------------------
@@ -357,7 +357,7 @@ Requires:	pyside6-core = %{version}
 PySide state machine module.
 
 %files statemachine
-%{py_platsitedir}/PySide6/QtStateMachine.abi3.so
+%{py_platsitedir}/PySide6/QtStateMachine.*.so
 %{py_platsitedir}/PySide6/QtStateMachine.pyi
 
 #------------------------------------------------------------------------------
@@ -372,7 +372,7 @@ PySide gui module.
 %files gui
 %{py_platsitedir}/PySide6/QtGui.pyi
 %{py_platsitedir}/PySide6/QtGui.*.so
-#%%{py_platsitedir}/PySide6/QtExampleIcons.abi3.so
+#%%{py_platsitedir}/PySide6/QtExampleIcons.*.so
 
 #------------------------------------------------------------------------------
 
@@ -440,7 +440,7 @@ PySide network module.
 %files network
 %{py_platsitedir}/PySide6/QtNetwork.*.so
 %{py_platsitedir}/PySide6/QtNetwork.pyi
-%{py_platsitedir}/PySide6/QtNetworkAuth.abi3.so
+%{py_platsitedir}/PySide6/QtNetworkAuth.*.so
 %{py_platsitedir}/PySide6/QtNetworkAuth.pyi
 
 #------------------------------------------------------------------------------
@@ -498,7 +498,7 @@ PySide opengl module.
 %files opengl
 %{py_platsitedir}/PySide6/QtOpenGL.*.so
 %{py_platsitedir}/PySide6/QtOpenGL.pyi
-%{py_platsitedir}/PySide6/QtOpenGLWidgets.abi3.so
+%{py_platsitedir}/PySide6/QtOpenGLWidgets.*.so
 %{py_platsitedir}/PySide6/QtOpenGLWidgets.pyi
 
 #------------------------------------------------------------------------------
@@ -528,7 +528,7 @@ PySide svg module.
 %files svg
 %{py_platsitedir}/PySide6/QtSvg.*.so
 %{py_platsitedir}/PySide6/QtSvg.pyi
-%{py_platsitedir}/PySide6/QtSvgWidgets.abi3.so
+%{py_platsitedir}/PySide6/QtSvgWidgets.*.so
 %{py_platsitedir}/PySide6/QtSvgWidgets.pyi
 
 #------------------------------------------------------------------------------
@@ -574,11 +574,11 @@ PySide webengine module.
 %{py_platsitedir}/PySide6/QtWebEngineCore.pyi
 %{py_platsitedir}/PySide6/QtWebEngineQuick.pyi
 %{py_platsitedir}/PySide6/QtWebEngineWidgets.pyi
-%{py_platsitedir}/PySide6/QtPdf.abi3.so
+%{py_platsitedir}/PySide6/QtPdf.*.so
 %{py_platsitedir}/PySide6/QtPdf.pyi
-%{py_platsitedir}/PySide6/QtPdfWidgets.abi3.so
+%{py_platsitedir}/PySide6/QtPdfWidgets.*.so
 %{py_platsitedir}/PySide6/QtPdfWidgets.pyi
-%{py_platsitedir}/PySide6/QtWebView.abi3.so
+%{py_platsitedir}/PySide6/QtWebView.*.so
 %{py_platsitedir}/PySide6/QtWebView.pyi
 
 #------------------------------------------------------------------------------
@@ -689,11 +689,11 @@ Requires:	pyside6-core = %{version}
 PySide qml module.
 
 %files qml
-%{_libdir}/libpyside6qml.abi3.so*
+%{_libdir}/libpyside6qml.*.so*
 %{py_platsitedir}/PySide6/QtQml.*.so
 %{py_platsitedir}/PySide6/QtQml.pyi
 %{py_platsitedir}/PySide6/QtQuick.pyi
-%{py_platsitedir}/PySide6/QtQuick3D.abi3.so
+%{py_platsitedir}/PySide6/QtQuick3D.*.so
 %{py_platsitedir}/PySide6/QtQuick3D.pyi
 %{py_platsitedir}/PySide6/QtQuickControls2.pyi
 %{py_platsitedir}/PySide6/QtQuickWidgets.pyi
@@ -849,15 +849,6 @@ Requires:	shiboken6 = %{EVRD}
 PySide devel files.
 
 %files devel
-%{_bindir}/balsam
-%{_bindir}/balsamui
-%{_bindir}/pyside
-%{_bindir}/qmlcachegen
-%{_bindir}/qmlimportscanner
-%{_bindir}/qmllint
-%{_bindir}/qmlls
-%{_bindir}/qsb
-%{_bindir}/svgtoqml
 %{_bindir}/pyside6-*
 %{_bindir}/shiboken6-genpyi
 %{_prefix}/plugins/designer/libPySidePlugin.so
@@ -873,7 +864,7 @@ PySide devel files.
 %{py_platsitedir}/PySide6/Qt/libexec/uic
 %{py_platsitedir}/shiboken6
 %{py_platsitedir}/shiboken6_generator
-%{py_platsitedir}/PySide6/QtDesigner.abi3.so
+%{py_platsitedir}/PySide6/QtDesigner.*.so
 %{py_platsitedir}/PySide6/QtDesigner.pyi
 %{py_platsitedir}/shiboken6-*.*-info/
 %{py_platsitedir}/shiboken6_generator-*.*-info/
@@ -940,6 +931,7 @@ CMAKE_BUILD_DIR=rpm.build
     -DCMAKE_BUILD_RPATH_USE_ORIGIN:BOOL=ON \
     -DCMAKE_SKIP_INSTALL_RPATH:BOOL=ON \
     -DFORCE_LIMITED_API=no \
+    -DQFP_PYTHON_SITE_PACKAGES=%{py_platsitedir} \
 %if 0%{?docs}
     -DBUILD_DOCS:BOOL=ON \
     -DQT_SRC_DIR= %{qt_module}-everywhere-src-%{qt6ver} \
@@ -954,6 +946,23 @@ cd ..
 
 %install
 DESTDIR=%{buildroot} cmake --install rpm.build
+
+# cmake installs headers at $prefix/{PySide6,shiboken6}/include
+mkdir -p %{buildroot}%{_includedir}
+if [ -d %{buildroot}%{_prefix}/PySide6/include ]; then
+	mv %{buildroot}%{_prefix}/PySide6/include %{buildroot}%{_includedir}/PySide6
+	rmdir %{buildroot}%{_prefix}/PySide6
+fi
+if [ -d %{buildroot}%{_prefix}/shiboken6/include ]; then
+	mv %{buildroot}%{_prefix}/shiboken6/include %{buildroot}%{_includedir}/shiboken6
+	rmdir %{buildroot}%{_prefix}/shiboken6
+fi
+# cmake's default site-packages is /usr/lib/pythonX.Y; OMV uses %{py_platsitedir}
+if [ -d %{buildroot}/usr/lib/python%{pyver}/site-packages ]; then
+	mkdir -p %{buildroot}%{py_platsitedir}
+	cp -a %{buildroot}/usr/lib/python%{pyver}/site-packages/. %{buildroot}%{py_platsitedir}/
+	rm -rf %{buildroot}/usr/lib/python%{pyver}
+fi
 
 # Generate egg-info manually and install since we're performing a cmake build.
 #
@@ -986,9 +995,9 @@ ln -s %{_bindir}/shiboken_tool.py %{buildroot}%{py_platsitedir}/shiboken6_genera
 # Copy of the generator next to the Python package (cmake already
 # installed /usr/bin/shiboken6 into the buildroot)
 cp -a rpm.build/sources/shiboken6_generator/generator/shiboken6 %{buildroot}%{py_platsitedir}/shiboken6_generator/
-# Fix the missing paths in PySide6Config.abi3.cmake which for some reason cmake strips out during install!
-sed -i s#'set_and_check(PYSIDE_PYTHONPATH \"\${PACKAGE_PREFIX_DIR}/\")#set_and_check(PYSIDE_PYTHONPATH \"%{py_platsitedir}/PySide6\")'# %{buildroot}%{_libdir}/cmake/PySide6/PySide6Config.abi3.cmake
-sed -i s#'set_and_check(PYSIDE_TYPESYSTEMS \"\${PACKAGE_PREFIX_DIR}/typesystems\")#set_and_check(PYSIDE_TYPESYSTEMS \"%{_datadir}/PySide6/typesystems\")'# %{buildroot}%{_libdir}/cmake/PySide6/PySide6Config.abi3.cmake
-sed -i s#'set_and_check(PYSIDE_GLUE \"\${PACKAGE_PREFIX_DIR}/glue\")#set_and_check(PYSIDE_GLUE \"%{_datadir}/PySide6/glue\")'# %{buildroot}%{_libdir}/cmake/PySide6/PySide6Config.abi3.cmake
+# cmake may leave these as prefix-relative paths; pin them to the OMV layout
+sed -i 's#set_and_check(PYSIDE_PYTHONPATH ".*")#set_and_check(PYSIDE_PYTHONPATH "%{py_platsitedir}/PySide6")#' %{buildroot}%{_libdir}/cmake/PySide6/PySide6Config.*.cmake
+sed -i 's#set_and_check(PYSIDE_TYPESYSTEMS ".*")#set_and_check(PYSIDE_TYPESYSTEMS "%{_datadir}/PySide6/typesystems")#' %{buildroot}%{_libdir}/cmake/PySide6/PySide6Config.*.cmake
+sed -i 's#set_and_check(PYSIDE_GLUE ".*")#set_and_check(PYSIDE_GLUE "%{_datadir}/PySide6/glue")#' %{buildroot}%{_libdir}/cmake/PySide6/PySide6Config.*.cmake
 
 rm -rf %{buildroot}/bootstrap
