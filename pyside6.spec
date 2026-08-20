@@ -953,7 +953,7 @@ cd ..
 /usr/bin/ninja -C rpm.build -j${RPM_BUILD_NCPUS}
 
 %install
-cmake --install rpm.build
+DESTDIR=%{buildroot} cmake --install rpm.build
 
 # Generate egg-info manually and install since we're performing a cmake build.
 #
@@ -983,8 +983,9 @@ mv %{buildroot}%{_bindir}/{android_deploy.py,deploy_lib,deploy.py,metaobjectdump
 mkdir -p %{buildroot}%{py_platsitedir}/shiboken6_generator/scripts
 ln -s %{_bindir}/shiboken_tool.py %{buildroot}%{py_platsitedir}/shiboken6_generator/scripts
 
-# Install shiboken6
-mv rpm.build/sources/shiboken6/generator/shiboken6 %{buildroot}%{py_platsitedir}/shiboken6_generator
+# Copy of the generator next to the Python package (cmake already
+# installed /usr/bin/shiboken6 into the buildroot)
+cp -a rpm.build/sources/shiboken6_generator/generator/shiboken6 %{buildroot}%{py_platsitedir}/shiboken6_generator/
 # Fix the missing paths in PySide6Config.abi3.cmake which for some reason cmake strips out during install!
 sed -i s#'set_and_check(PYSIDE_PYTHONPATH \"\${PACKAGE_PREFIX_DIR}/\")#set_and_check(PYSIDE_PYTHONPATH \"%{py_platsitedir}/PySide6\")'# %{buildroot}%{_libdir}/cmake/PySide6/PySide6Config.abi3.cmake
 sed -i s#'set_and_check(PYSIDE_TYPESYSTEMS \"\${PACKAGE_PREFIX_DIR}/typesystems\")#set_and_check(PYSIDE_TYPESYSTEMS \"%{_datadir}/PySide6/typesystems\")'# %{buildroot}%{_libdir}/cmake/PySide6/PySide6Config.abi3.cmake
