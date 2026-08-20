@@ -146,6 +146,8 @@ BuildRequires:	cmake(libxml2)
 # For now, let's just make sure there's no previous
 # version installed.
 BuildConflicts:	shiboken6
+BuildConflicts:	pyside6-devel
+BuildConflicts:	pyside6-core
 Requires:	pyside6-core
 Requires:	pyside6-gui
 Requires:	pyside6-help
@@ -937,9 +939,12 @@ export CMAKE_BUILD_DIR=rpm.build
     -DDOC_OUTPUT_FORMAT=qthelp \
 %endif
     -DNO_QT_TOOLS=yes
- 
-export PYTHONPATH=$PWD/%{_vpath_builddir}/sources
- 
+
+# %cmake leaves us in rpm.build. generate_pyi imports the just-built
+# QtCore/.so, which needs libshiboken from this tree — not a leftover
+# system PySide/Shiboken.
+export LD_LIBRARY_PATH="$PWD/sources/shiboken6/libshiboken:$PWD/sources/pyside6/libpyside:$PWD/sources/pyside6/libpysideqml:$PWD/sources/pyside6/libpysideremoteobjects${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+export PYTHONPATH="$PWD/sources/shiboken6/shibokenmodule:$PWD/sources/pyside6${PYTHONPATH:+:$PYTHONPATH}"
 cmake --build .
 
 %install
