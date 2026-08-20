@@ -922,7 +922,8 @@ sed -i 's#${base}/../shiboken6/##' sources/pyside6/CMakeLists.txt
  
 %build
 # https://src.fedoraproject.org/rpms/polyclipping/c/02c70e17ef9e9fcdfbc65021418a3e332e465b20?branch=rawhide
-export CMAKE_BUILD_DIR=rpm.build
+# Source tree already has a "build/" directory
+CMAKE_BUILD_DIR=rpm.build
 %cmake -G Ninja \
     -DCMAKE_BUILD_TYPE=None \
     -DSHIBOKEN_PYTHON_LIBRARIES=`pkgconf python3-embed --libs` \
@@ -937,6 +938,7 @@ export CMAKE_BUILD_DIR=rpm.build
     -DDOC_OUTPUT_FORMAT=qthelp \
 %endif
     -DNO_QT_TOOLS=yes
+unset CMAKE_BUILD_DIR
 
 # %cmake cds into rpm.build. generate_pyi imports the just-built
 # QtCore .so, which needs libshiboken from this tree.
