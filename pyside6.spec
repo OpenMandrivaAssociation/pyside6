@@ -925,7 +925,7 @@ sed -i 's#${base}/../shiboken6/##' sources/pyside6/CMakeLists.txt
 %build
 # https://src.fedoraproject.org/rpms/polyclipping/c/02c70e17ef9e9fcdfbc65021418a3e332e465b20?branch=rawhide
 export CMAKE_BUILD_DIR=rpm.build
-%cmake \
+%cmake -G Ninja \
     -DCMAKE_BUILD_TYPE=None \
     -DSHIBOKEN_PYTHON_LIBRARIES=`pkgconf python3-embed --libs` \
     -DBUILD_TESTS=OFF \
@@ -940,12 +940,11 @@ export CMAKE_BUILD_DIR=rpm.build
 %endif
     -DNO_QT_TOOLS=yes
 
-# %cmake leaves us in rpm.build. generate_pyi imports the just-built
-# QtCore/.so, which needs libshiboken from this tree — not a leftover
-# system PySide/Shiboken.
-export LD_LIBRARY_PATH="$PWD/sources/shiboken6/libshiboken:$PWD/sources/pyside6/libpyside:$PWD/sources/pyside6/libpysideqml:$PWD/sources/pyside6/libpysideremoteobjects${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-export PYTHONPATH="$PWD/sources/shiboken6/shibokenmodule:$PWD/sources/pyside6${PYTHONPATH:+:$PYTHONPATH}"
-cmake --build .
+# %cmake cds into rpm.build. generate_pyi imports the just-built
+# QtCore .so, which needs libshiboken from this tree.
+export LD_LIBRARY_PATH="$(pwd)/sources/shiboken6/libshiboken:$(pwd)/sources/pyside6/libpyside:$(pwd)/sources/pyside6/libpysideqml:$(pwd)/sources/pyside6/libpysideremoteobjects${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+export PYTHONPATH="$(pwd)/sources/shiboken6/shibokenmodule:$(pwd)/sources/pyside6${PYTHONPATH:+:$PYTHONPATH}"
+%ninja_build
 
 %install
 cmake --install rpm.build
