@@ -146,8 +146,6 @@ BuildRequires:	cmake(libxml2)
 # For now, let's just make sure there's no previous
 # version installed.
 BuildConflicts:	shiboken6
-BuildConflicts:	pyside6-devel
-BuildConflicts:	pyside6-core
 Requires:	pyside6-core
 Requires:	pyside6-gui
 Requires:	pyside6-help
