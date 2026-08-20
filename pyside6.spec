@@ -919,10 +919,19 @@ PySide devel files.
 # https://build.opensuse.org/package/view_file/KDE:Qt6/python3-pyside6/python3-pyside6.spec?expand=1
 # Restore 6.6.1 RPATH value. rpmlint will complain otherwise
 sed -i 's#${base}/../shiboken6/##' sources/pyside6/CMakeLists.txt
- 
+# generate_pyi --sys-path points at the *installed* shiboken6. We
+# BuildConflict that package, so use the in-tree module instead.
+sed -i 's|set(SHIBOKEN_PYTHON_MODULE_DIR "${PYTHON_SITE_PACKAGES}/shiboken6")|set(SHIBOKEN_PYTHON_MODULE_DIR "${pysidebindings_BINARY_DIR}/../shiboken6")|' sources/pyside6/cmake/Macros/PySideModules.cmake
+
 %build
 # https://src.fedoraproject.org/rpms/polyclipping/c/02c70e17ef9e9fcdfbc65021418a3e332e465b20?branch=rawhide
 # Source tree already has a "build/" directory
+# cmake -E env LD_LIBRARY_PATH=... replaces the environment and snapshots
+# $ENV{LD_LIBRARY_PATH} at configure time, so this must be set before cmake.
+# generate_pyi also overwrites PYTHONPATH from --sys-path; the in-tree
+# shiboken6 package lives at rpm.build/sources/shiboken6.
+export LD_LIBRARY_PATH="$PWD/rpm.build/sources/shiboken6/libshiboken:$PWD/rpm.build/sources/pyside6/libpyside:$PWD/rpm.build/sources/pyside6/libpysideqml:$PWD/rpm.build/sources/pyside6/libpysideremoteobjects${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+export PYTHONPATH="$PWD/rpm.build/sources:$PWD/rpm.build/sources/pyside6${PYTHONPATH:+:$PYTHONPATH}"
 CMAKE_BUILD_DIR=rpm.build
 %cmake -G Ninja \
     -DCMAKE_BUILD_TYPE=None \
@@ -941,10 +950,6 @@ CMAKE_BUILD_DIR=rpm.build
 
 # The cmake macro cds into rpm.build; return to the extracted source tree
 cd ..
-# generate_pyi imports the just-built QtCore .so, which needs
-# libshiboken from this tree rather than a leftover system copy
-export LD_LIBRARY_PATH="$PWD/rpm.build/sources/shiboken6/libshiboken:$PWD/rpm.build/sources/pyside6/libpyside:$PWD/rpm.build/sources/pyside6/libpysideqml:$PWD/rpm.build/sources/pyside6/libpysideremoteobjects${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-export PYTHONPATH="$PWD/rpm.build/sources/shiboken6/shibokenmodule:$PWD/rpm.build/sources/pyside6${PYTHONPATH:+:$PYTHONPATH}"
 /usr/bin/ninja -C rpm.build -j${RPM_BUILD_NCPUS}
 
 %install
