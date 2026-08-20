@@ -938,13 +938,14 @@ CMAKE_BUILD_DIR=rpm.build
     -DDOC_OUTPUT_FORMAT=qthelp \
 %endif
     -DNO_QT_TOOLS=yes
-unset CMAKE_BUILD_DIR
 
-# %cmake cds into rpm.build. generate_pyi imports the just-built
-# QtCore .so, which needs libshiboken from this tree.
-export LD_LIBRARY_PATH="$(pwd)/sources/shiboken6/libshiboken:$(pwd)/sources/pyside6/libpyside:$(pwd)/sources/pyside6/libpysideqml:$(pwd)/sources/pyside6/libpysideremoteobjects${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-export PYTHONPATH="$(pwd)/sources/shiboken6/shibokenmodule:$(pwd)/sources/pyside6${PYTHONPATH:+:$PYTHONPATH}"
-%ninja_build
+# %cmake cds into rpm.build; go back to the extracted source tree
+cd ..
+# generate_pyi imports the just-built QtCore .so, which needs
+# libshiboken from this tree rather than a leftover system copy
+export LD_LIBRARY_PATH="$PWD/rpm.build/sources/shiboken6/libshiboken:$PWD/rpm.build/sources/pyside6/libpyside:$PWD/rpm.build/sources/pyside6/libpysideqml:$PWD/rpm.build/sources/pyside6/libpysideremoteobjects${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+export PYTHONPATH="$PWD/rpm.build/sources/shiboken6/shibokenmodule:$PWD/rpm.build/sources/pyside6${PYTHONPATH:+:$PYTHONPATH}"
+/usr/bin/ninja -C rpm.build -j${RPM_BUILD_NCPUS}
 
 %install
 cmake --install rpm.build
