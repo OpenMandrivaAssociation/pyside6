@@ -38,6 +38,7 @@ BuildRequires:	cmake(Qt63DInput)
 BuildRequires:	cmake(Qt63DLogic)
 BuildRequires:	cmake(Qt63DRender)
 BuildRequires:	cmake(Qt6Bluetooth)
+BuildRequires:	cmake(Qt6CanvasPainter)
 BuildRequires:	cmake(Qt6Charts)
 BuildRequires:	cmake(Qt6Concurrent)
 BuildRequires:	cmake(Qt6Core)
@@ -240,6 +241,19 @@ PySide core module.
 %{py_platsitedir}/PySide6/QtDBus.pyi
 %{py_platsitedir}/PySide6/QtAsyncio
 %{py_platsitedir}/PySide6-*.*-info/
+
+#------------------------------------------------------------------------------
+%package canvaspainter
+Summary:	PySide CanvasPainter module
+Group:		Development/KDE and Qt
+Requires:	pyside6-core = %{version}
+
+%description canvaspainter
+PySide CanvasPainter module.
+
+%files canvaspainter
+%{py_platsitedir}/PySide6/QtCanvasPainter.abi3.so
+%{py_platsitedir}/PySide6/QtCanvasPainter.pyi
 
 #------------------------------------------------------------------------------
 %package graphs
