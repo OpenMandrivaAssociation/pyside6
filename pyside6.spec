@@ -939,7 +939,7 @@ CMAKE_BUILD_DIR=rpm.build
 %endif
     -DNO_QT_TOOLS=yes
 
-# %cmake cds into rpm.build; go back to the extracted source tree
+# The cmake macro cds into rpm.build; return to the extracted source tree
 cd ..
 # generate_pyi imports the just-built QtCore .so, which needs
 # libshiboken from this tree rather than a leftover system copy
