@@ -10,7 +10,7 @@
 Summary:	The PySide project provides LGPL-licensed Python bindings for Qt6
 Name:		pyside6
 Version:	6.11.2%{?gitdate:~%{gitdate}}
-Release:	1
+Release:	2
 License:	LGPLv2+
 Group:		Development/KDE and Qt
 Url:		https://wiki.qt.io/Qt_for_Python
@@ -1000,5 +1000,11 @@ cp -a rpm.build/sources/shiboken6_generator/generator/shiboken6 %{buildroot}%{py
 sed -i 's#set_and_check(PYSIDE_PYTHONPATH ".*")#set_and_check(PYSIDE_PYTHONPATH "%{py_platsitedir}/PySide6")#' %{buildroot}%{_libdir}/cmake/PySide6/PySide6Config.*.cmake
 sed -i 's#set_and_check(PYSIDE_TYPESYSTEMS ".*")#set_and_check(PYSIDE_TYPESYSTEMS "%{_datadir}/PySide6/typesystems")#' %{buildroot}%{_libdir}/cmake/PySide6/PySide6Config.*.cmake
 sed -i 's#set_and_check(PYSIDE_GLUE ".*")#set_and_check(PYSIDE_GLUE "%{_datadir}/PySide6/glue")#' %{buildroot}%{_libdir}/cmake/PySide6/PySide6Config.*.cmake
+# Headers were moved to %%{_includedir}/{PySide6,shiboken6}; cmake/pkgconfig
+# still advertise $prefix/{PySide6,shiboken6}/include
+sed -i 's#\${_IMPORT_PREFIX}/shiboken6/include#${_IMPORT_PREFIX}/include/shiboken6#' %{buildroot}%{_libdir}/cmake/Shiboken6/Shiboken6Targets.cmake
+sed -i 's#\${_IMPORT_PREFIX}/PySide6/include#${_IMPORT_PREFIX}/include/PySide6#' %{buildroot}%{_libdir}/cmake/PySide6/PySide6Targets.cmake
+sed -i 's#^includedir=.*#includedir=%{_includedir}/shiboken6#' %{buildroot}%{_libdir}/pkgconfig/shiboken6.pc
+sed -i 's#^includedir=.*#includedir=%{_includedir}/PySide6#' %{buildroot}%{_libdir}/pkgconfig/pyside6.pc
 
 rm -rf %{buildroot}/bootstrap
