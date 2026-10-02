@@ -1,0 +1,28 @@
+--- a/sources/shiboken6_generator/ApiExtractor/conditionalstreamreader.cpp
++++ b/sources/shiboken6_generator/ApiExtractor/conditionalstreamreader.cpp
+@@ -18,8 +18,6 @@
+ public:
+     using XmlStreamEntityResolverPtr = ConditionalStreamReader::XmlStreamEntityResolverPtr;
+ 
+-    QString resolveEntity(const QString& publicId,
+-                          const QString& systemId) override;
+     QString resolveUndeclaredEntity(const QString &name) override;
+ 
+     XmlStreamEntityResolverPtr source() const { return m_source; }
+@@ -35,16 +33,6 @@
+     XmlStreamEntityResolverPtr m_source;
+ };
+ 
+-QString ProxyEntityResolver::resolveEntity(const QString &publicId, const QString &systemId)
+-{
+-    QString result;
+-    if (m_source != nullptr)
+-        result = m_source->resolveEntity(publicId, systemId);
+-    if (result.isEmpty())
+-        result = QXmlStreamEntityResolver::resolveEntity(publicId, systemId);
+-    return result;
+-}
+-
+ QString ProxyEntityResolver::resolveUndeclaredEntity(const QString &name)
+ {
+     const auto it = m_undeclaredEntityCache.constFind(name);
