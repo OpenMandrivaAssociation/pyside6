@@ -41,7 +41,6 @@ BuildRequires:	cmake(Qt63DInput)
 BuildRequires:	cmake(Qt63DLogic)
 BuildRequires:	cmake(Qt63DRender)
 BuildRequires:	cmake(Qt6Bluetooth)
-BuildRequires:	cmake(Qt6CanvasPainter)
 BuildRequires:	cmake(Qt6Charts)
 BuildRequires:	cmake(Qt6Concurrent)
 BuildRequires:	cmake(Qt6Core)
@@ -244,19 +243,6 @@ PySide core module.
 %{py_platsitedir}/PySide6/QtDBus.pyi
 %{py_platsitedir}/PySide6/QtAsyncio
 %{py_platsitedir}/PySide6-*.*-info/
-
-#------------------------------------------------------------------------------
-%package canvaspainter
-Summary:	PySide CanvasPainter module
-Group:		Development/KDE and Qt
-Requires:	pyside6-core = %{version}
-
-%description canvaspainter
-PySide CanvasPainter module.
-
-%files canvaspainter
-%{py_platsitedir}/PySide6/QtCanvasPainter.*.so
-%{py_platsitedir}/PySide6/QtCanvasPainter.pyi
 
 #------------------------------------------------------------------------------
 %package graphs
@@ -941,7 +927,9 @@ CMAKE_BUILD_DIR=rpm.build
     -DFULLDOCSBUILD:BOOL=ON \
     -DDOC_OUTPUT_FORMAT=qthelp \
 %endif
-    -DNO_QT_TOOLS=yes
+    -DNO_QT_TOOLS=yes \
+    # Qt 6.12's grabCanvas is a 3-argument template, and shiboken emits a duplicate converter.
+    -DSKIP_MODULES=CanvasPainter
 
 # The cmake macro cds into rpm.build; return to the extracted source tree
 cd ..
