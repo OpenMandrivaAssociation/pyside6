@@ -913,9 +913,8 @@ sed -i 's|set(SHIBOKEN_PYTHON_MODULE_DIR "${PYTHON_SITE_PACKAGES}/shiboken6")|se
 export LD_LIBRARY_PATH="$PWD/rpm.build/sources/shiboken6/libshiboken:$PWD/rpm.build/sources/pyside6/libpyside:$PWD/rpm.build/sources/pyside6/libpysideqml:$PWD/rpm.build/sources/pyside6/libpysideremoteobjects${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export PYTHONPATH="$PWD/rpm.build/sources:$PWD/rpm.build/sources/pyside6${PYTHONPATH:+:$PYTHONPATH}"
 CMAKE_BUILD_DIR=rpm.build
-# Qt 6.12 changed grabCanvas into a 3-argument template, and shiboken emits
-# the QCanvasGradient converter twice. A comment inside the continued %cmake
-# command would be executed as a shell line, so the skip flag stays here.
+# Qt 6.12 changed grabCanvas into a 3-argument template, and shiboken
+# emits the QCanvasGradient converter twice.
 %cmake -G Ninja \
     -DCMAKE_BUILD_TYPE=None \
     -DSHIBOKEN_PYTHON_LIBRARIES=`pkgconf python3-embed --libs` \
