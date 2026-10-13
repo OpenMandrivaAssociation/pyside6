@@ -10,7 +10,7 @@
 Summary:	The PySide project provides LGPL-licensed Python bindings for Qt6
 Name:		pyside6
 Version:	6.11.2%{?gitdate:~%{gitdate}}
-Release:	3
+Release:	4
 License:	LGPLv2+
 Group:		Development/KDE and Qt
 Url:		https://wiki.qt.io/Qt_for_Python
@@ -132,7 +132,7 @@ BuildRequires:	cmake(Qt6WlShellIntegrationPrivate)
 BuildRequires:	cmake(Qt6XcbQpaPrivate)
 BuildRequires:	cmake(sdbus-c++)
 BuildRequires:	pkgconfig(phonon4qt6)
-BuildRequires:	pkgconfig(python)
+BuildRequires:	pkgconfig(python3)
 BuildRequires:	python%{pyver}dist(numpy)
 BuildRequires:	python%{pyver}dist(setuptools)
 BuildRequires:	python%{pyver}dist(sphinx)
